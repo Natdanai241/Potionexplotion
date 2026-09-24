@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>ระเบิดยาอาคม — Potion Explosion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ink:#0b0718; --deep:#150e2e; --deep2:#1e1440; --deep3:#2a1b57;
+  --violet:#8b5cf6; --violet-d:#5b34c9;
+  --gold:#ffc24b; --gold-d:#d98b12;
+  --teal:#2fe0c4; --teal-d:#12a894;
+  --rose:#ff6f9c; --rose-d:#c93a6c;
+  --txt:#f4eeff; --dim:#a698c9; --dim2:#7e6fa6;
+  --line:rgba(180,160,255,.18); --line2:rgba(180,160,255,.32);
+  --glass:rgba(255,255,255,.055); --glass2:rgba(255,255,255,.1);
+  --ok:#4ee39b; --bad:#ff6b7f;
+  --cell:26px; --hole:19px;
+  --sh1:0 2px 6px rgba(0,0,0,.35);
+  --sh2:0 10px 30px rgba(0,0,0,.45);
+  --r:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;overscroll-behavior:none}
+body{font-family:'Mali',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--ink);color:var(--txt);
+  user-select:none;-webkit-user-select:none;font-size:14px;line-height:1.35}
+h1,h2,h3,p{margin:0}
+.muted{color:var(--dim)} .tiny{font-size:11px} .nano{font-size:9.5px}
+/* ============ BACKGROUND ============ */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+ background:
+  radial-gradient(1100px 620px at 12% -8%, #4c2b9e 0%, transparent 58%),
+  radial-gradient(900px 520px at 96% 4%, #0f5f73 0%, transparent 52%),
+  radial-gradient(760px 560px at 52% 112%, #6d1f6a 0%, transparent 60%),
+  linear-gradient(175deg,#160d33 0%,#1d1240 46%,#120a28 100%);}
+#bg .orb{position:absolute;border-radius:50%;filter:blur(46px);opacity:.26;animation:orb 24s ease-in-out infinite alternate}
+@keyframes orb{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(26px,-30px,0) scale(1.18)}}
+#bg .art{position:absolute;left:0;bottom:-4px;width:100%;opacity:.42}
+.bub{position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.9),rgba(160,230,255,.2) 58%,rgba(120,180,255,.04));
+  border:1px solid rgba(255,255,255,.2);animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(16dvh) scale(.5);opacity:0}14%{opacity:.7}100%{transform:translateY(-102dvh) scale(1.1);opacity:0}}
+/* ============ SHELLS ============ */
+.screen{display:none;position:relative;z-index:2;height:100dvh;width:100%}
+.screen.on{display:flex}
+.center{align-items:center;justify-content:center;padding:14px;overflow-y:auto;flex-direction:column}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.03));
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--sh2), inset 0 1px 0 rgba(255,255,255,.14)}
+.btn{font-family:inherit;font-weight:700;font-size:15px;color:#2a1508;cursor:pointer;border:0;border-radius:14px;
+  padding:12px 16px;background:linear-gradient(180deg,#ffe3a0 0%,var(--gold) 55%,#f0a520 100%);
+  box-shadow:0 4px 0 var(--gold-d),0 9px 20px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.7);
+  transition:transform .09s ease,box-shadow .09s ease,filter .15s;white-space:nowrap}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--gold-d),0 4px 10px rgba(0,0,0,.4)}
+.btn.sec{color:#f0e9ff;background:linear-gradient(180deg,#8e6ce0,var(--violet-d));box-shadow:0 4px 0 #351d78,0 9px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.28)}
+.btn.sec:active{box-shadow:0 1px 0 #351d78}
+.btn.tea{color:#062b26;background:linear-gradient(180deg,#9ffbe8,var(--teal));box-shadow:0 4px 0 var(--teal-d),0 9px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.7)}
+.btn.tea:active{box-shadow:0 1px 0 var(--teal-d)}
+.btn.rose{color:#37071a;background:linear-gradient(180deg,#ffb3cc,var(--rose));box-shadow:0 4px 0 var(--rose-d),0 9px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.6)}
+.btn.rose:active{box-shadow:0 1px 0 var(--rose-d)}
+.btn[disabled]{opacity:.34;cursor:not-allowed;filter:grayscale(.6) brightness(.85);transform:none!important}
+.btn.sm{font-size:12px;padding:9px 10px;border-radius:12px}
+.ico{font-family:inherit;background:var(--glass2);border:1px solid var(--line);color:var(--txt);border-radius:11px;
+  width:32px;height:32px;min-width:32px;font-size:14px;cursor:pointer;display:grid;place-items:center;padding:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+.ico:active{transform:scale(.93)}
+.ico.off{opacity:.36}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row.c{justify-content:center;align-items:center}
+.seg{display:flex;gap:5px;background:rgba(0,0,0,.3);padding:5px;border-radius:14px;border:1px solid var(--line)}
+.seg button{flex:1;font-family:inherit;font-size:13px;font-weight:700;color:var(--dim);background:transparent;border:0;
+  border-radius:10px;padding:9px 4px;cursor:pointer;transition:all .15s}
+.seg button.act{background:linear-gradient(180deg,var(--violet),var(--violet-d));color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.3)}
+input[type=text]{font-family:inherit;font-size:15px;color:var(--txt);background:rgba(0,0,0,.34);border:1px solid var(--line);
+  border-radius:12px;padding:11px 13px;width:100%;outline:none;transition:border-color .2s}
+input[type=text]:focus{border-color:var(--teal)}
+label.lb{font-size:12px;color:var(--dim);display:block;margin:0 0 5px 2px}
+/* ============ MENU ============ */
+.wrap{width:min(540px,100%);display:flex;flex-direction:column;gap:11px}
+.logo{text-align:center}
+.logo .mas{font-size:clamp(38px,12vw,60px);filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+.logo .mas span{display:inline-block;animation:bob 3s ease-in-out infinite}
+.logo .mas span:nth-child(2){animation-delay:.35s}.logo .mas span:nth-child(3){animation-delay:.7s}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-11px) rotate(5deg)}}
+.logo .t1{font-size:clamp(30px,9vw,48px);font-weight:700;line-height:1.08;letter-spacing:.5px;
+  background:linear-gradient(180deg,#fff6d4 0%,var(--gold) 48%,#ff8a3d 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 14px rgba(255,150,40,.5))}
+.logo .t2{font-size:12px;letter-spacing:4px;color:var(--teal);font-weight:600}
+/* ============ GAME GRID ============ */
+#sc-game{display:none;grid-template-rows:auto auto auto minmax(0,1fr) auto auto;gap:4px;
+  padding:calc(env(safe-area-inset-top) + 5px) 7px calc(env(safe-area-inset-bottom) + 6px);height:100dvh;overflow:hidden}
+#sc-game.on{display:grid}
+.hdr{display:flex;align-items:center;gap:5px;min-width:0}
+.turnbox{flex:1;min-width:0;display:flex;align-items:center;gap:7px;padding:5px 9px;border-radius:13px;
+  background:linear-gradient(120deg,rgba(255,194,75,.16),rgba(139,92,246,.14));border:1px solid var(--line2);overflow:hidden}
+.turnbox .av{font-size:18px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.turnbox .nm{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.turnbox .ph{font-size:10px;color:var(--teal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#room-chip{display:none;align-items:center;gap:3px;font-size:10.5px;font-weight:700;color:var(--teal);
+  background:rgba(47,224,196,.13);border:1px solid rgba(47,224,196,.45);border-radius:10px;padding:5px 7px;white-space:nowrap}
+#room-chip.on{display:flex}
+/* LOG BAR (in-flow, never covers board) */
+.logbar{display:flex;align-items:center;gap:6px;min-width:0;height:26px;padding:0 9px;border-radius:9px;
+  background:rgba(0,0,0,.32);border:1px solid var(--line)}
+.logbar .dotx{width:6px;height:6px;border-radius:50%;background:var(--teal);flex:0 0 auto;box-shadow:0 0 8px var(--teal)}
+.logbar .txt{flex:1;min-width:0;font-size:11px;color:#dcd2f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logbar .txt.flash{animation:lf .5s ease}
+@keyframes lf{0%{color:var(--gold);transform:translateX(5px)}100%{color:#dcd2f5;transform:none}}
+.logbar button{font-family:inherit;background:none;border:0;color:var(--dim);font-size:12px;cursor:pointer;padding:0 2px}
+/* PLAYERS */
+.players{display:grid;gap:5px;min-width:0}
+.players.p2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.players.p3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.players.p4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.pc{display:none;flex-direction:column;gap:2px;padding:5px 6px;border-radius:12px;min-width:0;position:relative;
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line);overflow:visible}
+.pc.on{display:flex}
+.pc.cur{border-color:var(--gold);background:linear-gradient(160deg,rgba(255,194,75,.2),rgba(255,194,75,.05));
+  box-shadow:0 0 0 1px rgba(255,194,75,.5),0 0 20px rgba(255,194,75,.25)}
+.pc.dc{opacity:.45}
+.pc .l1{display:flex;align-items:center;gap:4px;min-width:0}
+.pc .avx{font-size:13px;flex:0 0 auto}
+.pc .nm{font-size:10.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.pc .sc{font-size:14px;font-weight:700;color:var(--gold);flex:0 0 auto;text-shadow:0 2px 6px rgba(255,160,40,.4)}
+.pc .l2{display:flex;gap:4px;font-size:9px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc .react{position:absolute;top:-14px;right:1px;font-size:18px;opacity:0;pointer-events:none}
+.pc .react.on{animation:pop 1.3s ease}
+@keyframes pop{0%{opacity:0;transform:scale(.3) translateY(8px)}18%{opacity:1;transform:scale(1.3)}30%{transform:scale(1)}78%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+/* STAGE + DISPENSER */
+.stage{min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;overflow:hidden}
+.machine{position:relative;padding:8px 10px 10px;border-radius:20px;flex:0 0 auto;
+  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(70,40,130,.3) 40%,rgba(20,10,45,.5));
+  border:1px solid var(--line2);
+  box-shadow:0 16px 38px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.22), inset 0 -3px 12px rgba(0,0,0,.5)}
+.machine::before,.machine::after{content:'';position:absolute;top:-5px;width:12px;height:12px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#fff2c0,var(--gold));box-shadow:0 0 12px rgba(255,194,75,.7)}
+.machine::before{left:9px}.machine::after{right:9px}
+.tankbar{display:flex;align-items:center;justify-content:center;gap:7px;font-size:9.5px;color:var(--dim);
+  margin-bottom:5px;white-space:nowrap}
+.tankbar b{color:var(--teal);font-size:11px}
+.tracks{display:flex;gap:5px;align-items:flex-end;justify-content:center}
+.track{position:relative;width:var(--cell);height:calc(var(--cell) * 9);border-radius:calc(var(--cell)/2);
+  background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(10,4,26,.3));
+  box-shadow:inset 0 0 0 1px rgba(180,160,255,.16), inset 0 8px 14px rgba(0,0,0,.6), inset 0 -2px 6px rgba(255,255,255,.07)}
+.track::before{content:'';position:absolute;left:16%;top:5px;bottom:5px;width:16%;border-radius:10px;
+  background:linear-gradient(90deg,rgba(255,255,255,.13),transparent)}
+.track .lockline{position:absolute;left:-2px;right:-2px;height:1px;background:repeating-linear-gradient(90deg,rgba(255,111,156,.7) 0 4px,transparent 4px 8px);
+  bottom:calc(var(--cell) * 8);pointer-events:none}
+/* MARBLE — glossy, dimensional */
+.marble{position:absolute;left:2px;bottom:2px;width:calc(var(--cell) - 4px);height:calc(var(--cell) - 4px);border-radius:50%;
+  transform:translateY(calc(var(--i,0) * var(--cell) * -1));
+  transition:transform .19s cubic-bezier(.35,1.2,.5,1),opacity .2s,filter .18s,box-shadow .18s;
+  background:
+    radial-gradient(circle at 31% 23%, rgba(255,255,255,.98) 0%, rgba(255,255,255,.5) 8%, rgba(255,255,255,0) 24%),
+    radial-gradient(circle at 68% 80%, rgba(255,255,255,.34) 0%, rgba(255,255,255,0) 30%),
+    radial-gradient(circle at 50% 118%, var(--m3) 0%, rgba(0,0,0,0) 46%),
+    radial-gradient(circle at 38% 32%, var(--m1) 0%, var(--m2) 44%, var(--m3) 100%);
+  box-shadow:
+    inset -2px -3px 7px rgba(0,0,0,.55),
+    inset 2px 3px 6px rgba(255,255,255,.3),
+    inset 0 0 10px 2px var(--mg),
+    0 2px 5px rgba(0,0,0,.55),
+    0 0 10px var(--mg)}
+.marble::after{content:'';position:absolute;left:24%;top:13%;width:26%;height:19%;border-radius:50%;
+  background:rgba(255,255,255,.92);filter:blur(.6px);transform:rotate(-22deg)}
+.marble::before{content:'';position:absolute;left:58%;top:62%;width:16%;height:11%;border-radius:50%;
+  background:rgba(255,255,255,.4);filter:blur(1px)}
+.marble.cR{--m1:#ff9aa8;--m2:#ec2b48;--m3:#71061f;--mg:rgba(255,60,95,.5)}
+.marble.cY{--m1:#fff1b8;--m2:#ffc02e;--m3:#8c5304;--mg:rgba(255,196,50,.5)}
+.marble.cB{--m1:#b9e4ff;--m2:#2f8fff;--m3:#082f7d;--mg:rgba(60,150,255,.5)}
+.marble.cK{--m1:#c3bcf0;--m2:#4d4188;--m3:#100c24;--mg:rgba(140,120,220,.45)}
+.marble.locked{filter:brightness(.5) saturate(.5)}
+.marble.locked::after{opacity:.4}
+.marble.pick{cursor:pointer}
+.marble.pick:hover{filter:brightness(1.18)}
+.marble.hl{box-shadow:inset -2px -3px 7px rgba(0,0,0,.55),inset 2px 3px 6px rgba(255,255,255,.3),
+  0 0 0 2px var(--teal),0 0 16px var(--teal)}
+.marble.chosen{filter:brightness(1.45);box-shadow:inset -2px -3px 7px rgba(0,0,0,.5),0 0 0 3px var(--gold),0 0 22px var(--gold);z-index:4}
+.marble.boom{animation:boom .4s cubic-bezier(.3,.9,.4,1) forwards;z-index:6}
+@keyframes boom{
+  0%{filter:brightness(1)}
+  30%{filter:brightness(2.8) saturate(1.7);transform:translateY(calc(var(--i,0) * var(--cell) * -1)) scale(1.4)}
+  100%{filter:brightness(3.4);opacity:0;transform:translateY(calc(var(--i,0) * var(--cell) * -1)) scale(.08)}}
+.marble.gone{opacity:0;transform:translateY(calc(var(--i,0) * var(--cell) * -1)) scale(.15)}
+.marble.newin{opacity:0}
+.flashwrap{position:absolute;inset:0;pointer-events:none;border-radius:20px;opacity:0;background:radial-gradient(circle,rgba(255,255,255,.55),transparent 62%)}
+.flashwrap.on{animation:fw .4s ease}
+@keyframes fw{0%{opacity:.85}100%{opacity:0}}
+/* STACKS */
+.stacks{display:flex;gap:4px;width:100%;max-width:520px;padding:0 2px;flex:0 0 auto}
+.stk{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:0;padding:4px 2px;border-radius:11px;
+  background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid var(--line);
+  font-size:8.5px;color:var(--dim);cursor:pointer;overflow:hidden;transition:all .15s}
+.stk .ic{font-size:15px;line-height:1.1}
+.stk .nmx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:#cdc2ea}
+.stk .vl{color:var(--gold);font-weight:700;font-size:9.5px}
+.stk.sel{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal),0 0 16px rgba(47,224,196,.4);animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+.stk.empty{opacity:.28}
+/* LAB */
+.lab{display:flex;flex-direction:column;gap:4px;min-width:0;overflow:hidden}
+.labtop{display:flex;align-items:center;gap:6px;min-width:0}
+.labtop .own{font-size:10.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.pool{display:flex;gap:4px;align-items:center;padding:4px 7px;border-radius:12px;flex:0 0 auto;
+  background:linear-gradient(180deg,rgba(47,224,196,.1),rgba(0,0,0,.28));border:1px solid var(--line)}
+.pslot{width:24px;height:24px;border-radius:50%;border:1px dashed rgba(255,255,255,.22);position:relative;flex:0 0 auto;display:none}
+.pslot.on{display:block}
+.pslot.over{border-color:var(--bad);box-shadow:0 0 0 1px rgba(255,107,127,.6)}
+.pm{position:absolute;inset:0;border-radius:50%;cursor:pointer;
+  background:
+   radial-gradient(circle at 31% 23%, rgba(255,255,255,.98) 0%, rgba(255,255,255,.45) 9%, rgba(255,255,255,0) 26%),
+   radial-gradient(circle at 38% 32%, var(--m1) 0%, var(--m2) 44%, var(--m3) 100%);
+  box-shadow:inset -2px -3px 5px rgba(0,0,0,.5),inset 2px 2px 4px rgba(255,255,255,.3),0 2px 4px rgba(0,0,0,.5)}
+.pm.cR{--m1:#ff9aa8;--m2:#ec2b48;--m3:#71061f}
+.pm.cY{--m1:#fff1b8;--m2:#ffc02e;--m3:#8c5304}
+.pm.cB{--m1:#b9e4ff;--m2:#2f8fff;--m3:#082f7d}
+.pm.cK{--m1:#c3bcf0;--m2:#4d4188;--m3:#100c24}
+.pm.sel{box-shadow:0 0 0 3px var(--gold),0 0 16px var(--gold)}
+.pm.wild::after{content:'✦';position:absolute;inset:0;display:grid;place-items:center;font-size:12px;color:#fff;text-shadow:0 0 6px #fff}
+.brewrow{display:flex;gap:5px;min-width:0}
+.bw{flex:1 1 0;min-width:0;padding:5px 7px;border-radius:13px;display:flex;flex-direction:column;gap:3px;overflow:hidden;
+  background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.025));border:1px solid var(--line)}
+.bw.empty{opacity:.32}
+.bw .h{display:flex;align-items:center;gap:4px;min-width:0}
+.bw .ic{font-size:14px;flex:0 0 auto}
+.bw .nm{font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.bw .vl{font-size:9.5px;font-weight:700;color:#2a1508;background:linear-gradient(180deg,#ffe3a0,var(--gold));border-radius:6px;padding:0 5px;flex:0 0 auto}
+.slots{display:flex;gap:3px;flex-wrap:wrap}
+.slot{width:var(--hole);height:var(--hole);border-radius:50%;border:2px solid;display:none;position:relative;flex:0 0 auto}
+.slot.on{display:block}
+.slot.sR{border-color:#ec2b48;background:rgba(236,43,72,.13)}
+.slot.sY{border-color:#ffc02e;background:rgba(255,192,46,.13)}
+.slot.sB{border-color:#2f8fff;background:rgba(47,143,255,.13)}
+.slot.sK{border-color:#6e62ae;background:rgba(110,98,174,.16)}
+.slot.fill{border-color:transparent;
+  background:radial-gradient(circle at 31% 23%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.4) 10%, rgba(255,255,255,0) 28%),
+             radial-gradient(circle at 38% 32%, var(--m1) 0%, var(--m2) 44%, var(--m3) 100%);
+  box-shadow:inset -2px -2px 4px rgba(0,0,0,.5),inset 1px 2px 3px rgba(255,255,255,.3),0 1px 3px rgba(0,0,0,.5)}
+.slot.fill.sR{--m1:#ff9aa8;--m2:#ec2b48;--m3:#71061f}
+.slot.fill.sY{--m1:#fff1b8;--m2:#ffc02e;--m3:#8c5304}
+.slot.fill.sB{--m1:#b9e4ff;--m2:#2f8fff;--m3:#082f7d}
+.slot.fill.sK{--m1:#c3bcf0;--m2:#4d4188;--m3:#100c24}
+.slot.can{cursor:pointer;box-shadow:0 0 0 2px rgba(255,255,255,.65),0 0 12px rgba(255,255,255,.4);animation:pulse 1.2s infinite}
+/* completed shelf — fixed height, scroll, never overflow */
+.shelfwrap{display:flex;align-items:center;gap:5px;min-width:0}
+.shelf{flex:1;min-width:0;display:flex;gap:4px;overflow-x:auto;overflow-y:hidden;height:34px;align-items:center;
+  padding:0 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.shelf::-webkit-scrollbar{display:none}
+.pot{flex:0 0 auto;display:flex;align-items:center;gap:3px;padding:4px 7px;border-radius:10px;font-size:10.5px;cursor:pointer;
+  background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:1px solid var(--line2);white-space:nowrap;
+  font-family:inherit;color:var(--txt)}
+.pot.drunk{opacity:.4;filter:grayscale(.75)}
+.pot.ready{border-color:var(--teal);box-shadow:0 0 10px rgba(47,224,196,.3)}
+.pot .v{color:var(--gold);font-weight:700;font-size:9.5px}
+.emptyhint{font-size:10px;color:var(--dim2);white-space:nowrap}
+.bannr{display:none;align-items:center;gap:6px;padding:5px 9px;border-radius:11px;font-size:11px;color:#d6fff8;min-width:0;
+  background:linear-gradient(100deg,rgba(47,224,196,.2),rgba(139,92,246,.16));border:1px solid rgba(47,224,196,.5)}
+.bannr.on{display:flex}
+.bannr span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.actions{display:flex;gap:5px;min-width:0}
+.actions .btn{flex:1 1 0;min-width:0;padding:11px 4px;font-size:12.5px;overflow:hidden;text-overflow:ellipsis}
+/* MODALS */
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:14px;
+  background:rgba(8,4,20,.75);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.modal.on{display:flex}
+.mbox{width:min(520px,100%);max-height:88dvh;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:7px}
+.opt{display:flex;flex-direction:column;gap:2px;align-items:flex-start;padding:9px;border-radius:12px;cursor:pointer;
+  font-size:11px;text-align:left;color:var(--txt);font-family:inherit;
+  background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:1px solid var(--line);transition:all .14s}
+.opt:hover:not([disabled]){border-color:var(--gold);transform:translateY(-2px)}
+.opt .oi{font-size:19px;display:flex;align-items:center;gap:5px}
+.opt .on2{font-weight:700;font-size:12px}
+.opt[disabled]{opacity:.32;cursor:not-allowed}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.9) 0%,rgba(255,255,255,0) 30%),
+             radial-gradient(circle at 38% 32%,var(--m1),var(--m2) 45%,var(--m3));box-shadow:0 1px 3px rgba(0,0,0,.5)}
+.dot.cR{--m1:#ff9aa8;--m2:#ec2b48;--m3:#71061f}
+.dot.cY{--m1:#fff1b8;--m2:#ffc02e;--m3:#8c5304}
+.dot.cB{--m1:#b9e4ff;--m2:#2f8fff;--m3:#082f7d}
+.dot.cK{--m1:#c3bcf0;--m2:#4d4188;--m3:#100c24}
+.rules p{margin:5px 0;font-size:12px;line-height:1.6}
+.rules h3{color:var(--gold);font-size:14px;margin-top:10px}
+.rules ul{margin:4px 0;padding-left:17px;font-size:12px;line-height:1.55}
+.prow{display:flex;gap:7px;align-items:flex-start;padding:7px 9px;margin:5px 0;border-radius:11px;
+  background:rgba(255,255,255,.055);border:1px solid var(--line)}
+#loglist{display:flex;flex-direction:column;gap:4px;font-size:11.5px;max-height:60dvh;overflow-y:auto}
+#loglist div{padding:5px 8px;border-radius:8px;background:rgba(255,255,255,.05);border-left:2px solid var(--violet)}
+.rtab{width:100%;border-collapse:collapse;font-size:12.5px}
+.rtab th,.rtab td{padding:7px 3px;border-bottom:1px solid var(--line);text-align:center}
+.rtab th{color:var(--dim);font-size:10px;font-weight:600}
+.rtab td:first-child{text-align:left;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rtab tr.win td{color:var(--gold);font-weight:700;background:rgba(255,194,75,.11)}
+#errpanel{position:fixed;left:0;right:0;bottom:0;z-index:99;display:none;flex-direction:column;gap:5px;
+  background:#7a0c1c;border-top:3px solid #ff6b7f;padding:9px 12px;font-size:12px;max-height:42dvh;overflow:auto}
+#errpanel.on{display:flex}
+#errtext{font-family:ui-monospace,monospace;font-size:10.5px;white-space:pre-wrap;color:#ffe0e4}
+@media (max-width:380px){
+  .actions .btn{font-size:11px;padding:10px 2px}
+  .pslot{width:21px;height:21px}
+  :root{--hole:17px}
+}
+@media (min-height:780px){ :root{--hole:22px} .pslot{width:28px;height:28px} }
+</style>
+</head>
+<body>
+
+<div id="bg">
+  <div class="orb" style="width:270px;height:270px;background:#ff6f9c;left:-70px;top:6%"></div>
+  <div class="orb" style="width:310px;height:310px;background:#2fe0c4;right:-90px;top:34%;animation-delay:-8s"></div>
+  <div class="orb" style="width:250px;height:250px;background:#ffc24b;left:32%;bottom:-80px;animation-delay:-15s"></div>
+  <svg class="art" viewBox="0 0 400 130" preserveAspectRatio="none">
+    <rect x="0" y="110" width="400" height="20" fill="#241546"/>
+    <rect x="0" y="106" width="400" height="6" rx="3" fill="#39236e"/>
+    <g>
+      <path d="M24 70h18v10l10 16v14H14V96l10-16z" fill="#2fe0c4" opacity=".5"/>
+      <rect x="26" y="62" width="14" height="9" rx="3" fill="#8b7ad4"/>
+      <path d="M76 66h14v9l8 13v18H68V88l8-13z" fill="#ff6f9c" opacity=".45"/>
+      <rect x="77" y="59" width="12" height="8" rx="3" fill="#8b7ad4"/>
+      <ellipse cx="200" cy="108" rx="44" ry="9" fill="#170e33"/>
+      <path d="M160 84a40 25 0 0 0 80 0z" fill="#4c2b9e"/>
+      <ellipse cx="200" cy="84" rx="40" ry="10" fill="#7ef0c8" opacity=".75"/>
+      <circle cx="186" cy="76" r="4" fill="#bdfce6" opacity=".7"/>
+      <circle cx="210" cy="71" r="3" fill="#bdfce6" opacity=".55"/>
+      <path d="M318 60h16v11l9 15v20h-34V86l9-15z" fill="#ffc24b" opacity=".45"/>
+      <rect x="319" y="52" width="14" height="9" rx="3" fill="#8b7ad4"/>
+      <rect x="248" y="82" width="48" height="8" rx="2" fill="#5b3c9e"/>
+      <rect x="250" y="64" width="9" height="18" rx="2" fill="#ff9ab4"/>
+      <rect x="261" y="68" width="9" height="14" rx="2" fill="#9ad3ff"/>
+      <rect x="272" y="62" width="9" height="20" rx="2" fill="#ffdc8a"/>
+      <rect x="283" y="70" width="9" height="12" rx="2" fill="#a8f5e2"/>
+    </g>
+  </svg>
+</div>
+
+<div id="errpanel">
+  <b>⚠️ ระบบขัดข้อง</b><div id="errtext"></div>
+  <div class="row"><button class="btn sm rose" id="errclose">ปิด</button><button class="btn sm sec" id="errreload">โหลดใหม่</button></div>
+</div>
+
+<!-- ============ MENU ============ -->
+<section id="sc-menu" class="screen on center">
+  <div class="wrap">
+    <div class="logo">
+      <div class="mas"><span>🧙‍♀️</span><span>⚗️</span><span>💥</span></div>
+      <div class="t1">ระเบิดยาอาคม</div>
+      <div class="t2">POTION EXPLOSION</div>
+      <div class="tiny muted" style="margin-top:5px">สถาบันเวทเล่นแร่แปรธาตุ • ห้องทดลองยาระเบิด</div>
+    </div>
+    <div class="card" style="padding:14px;display:flex;flex-direction:column;gap:9px">
+      <button class="btn" id="m-solo">🤖 เล่นคนเดียว (สู้กับบอท)</button>
+      <button class="btn sec" id="m-local">👥 เครื่องเดียวกัน 2–4 คน</button>
+      <button class="btn tea" id="m-online">🌐 เล่นออนไลน์กับเพื่อน</button>
+      <div class="row c" style="margin-top:2px">
+        <button class="btn sm sec" id="m-rules">📖 วิธีเล่น</button>
+        <button class="ico" id="m-music">🎵</button>
+        <button class="ico" id="m-sfx">🔊</button>
+      </div>
+    </div>
+    <div class="tiny muted" style="text-align:center">กติกาชุดพื้นฐาน • ลูกแก้ว 80 • สูตรยา 64 • เหรียญทักษะ 15</div>
+  </div>
+</section>
+
+<!-- ============ SETUP ============ -->
+<section id="sc-setup" class="screen center">
+  <div class="wrap card" style="padding:16px">
+    <h2 style="font-size:19px">⚗️ ตั้งค่าเกม</h2>
+    <div><label class="lb">ชื่อของคุณ</label><input type="text" id="s-name" maxlength="10" value="นักเรียน"></div>
+    <div><label class="lb">จำนวนผู้เล่น</label>
+      <div class="seg" id="s-count"><button data-v="2" class="act">2 คน</button><button data-v="3">3 คน</button><button data-v="4">4 คน</button></div>
+    </div>
+    <div id="s-diffwrap"><label class="lb">ระดับบอท</label>
+      <div class="seg" id="s-diff"><button data-v="easy">ง่าย</button><button data-v="normal" class="act">ปกติ</button><button data-v="hard">ยาก</button></div>
+    </div>
+    <div class="row" style="margin-top:4px">
+      <button class="btn sec" id="s-back" style="flex:0 0 32%">← กลับ</button>
+      <button class="btn" id="s-start" style="flex:1">เริ่มเกม ▶</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ONLINE ============ -->
+<section id="sc-online" class="screen center">
+  <div class="wrap card" style="padding:16px">
+    <h2 style="font-size:19px">🌐 เล่นออนไลน์ (P2P)</h2>
+    <div class="tiny muted">เครื่องที่สร้างห้องจะเป็นเจ้าภาพและรันกติกาทั้งหมด ไม่ต้องใช้เซิร์ฟเวอร์</div>
+    <div><label class="lb">ชื่อผู้เล่น (ใช้ชื่อเดิมเพื่อกลับเข้าห้อง)</label><input type="text" id="o-name" maxlength="10" value="นักเรียน"></div>
+    <button class="btn" id="o-create">➕ สร้างห้องใหม่</button>
+    <div class="row">
+      <input type="text" id="o-code" maxlength="5" placeholder="รหัสห้อง" style="flex:1;text-transform:uppercase;letter-spacing:4px;text-align:center;font-weight:700">
+      <button class="btn tea" id="o-join" style="flex:0 0 33%">เข้าร่วม</button>
+    </div>
+    <div id="o-lobby" style="display:none;flex-direction:column;gap:9px;border-top:1px solid var(--line);padding-top:10px">
+      <div class="row c" style="justify-content:space-between">
+        <div class="tiny">รหัสห้อง <b id="o-roomcode" style="color:var(--teal);letter-spacing:4px;font-size:20px">-----</b></div>
+        <button class="btn sm sec" id="o-copy">🔗 คัดลอกลิงก์</button>
+      </div>
+      <div id="o-status" class="tiny muted">กำลังเชื่อมต่อ…</div>
+      <div id="o-players" style="display:flex;flex-direction:column;gap:5px"></div>
+      <button class="btn" id="o-start">เริ่มเกม ▶ (เจ้าภาพเท่านั้น)</button>
+    </div>
+    <button class="btn sec" id="o-back">← กลับเมนู</button>
+  </div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section id="sc-game" class="screen">
+  <div class="hdr">
+    <button class="ico" id="g-menu">☰</button>
+    <div class="turnbox">
+      <span class="av" id="turn-av">🧙</span>
+      <div style="flex:1;min-width:0"><div class="nm" id="turn-nm">—</div><div class="ph" id="turn-ph">—</div></div>
+    </div>
+    <div id="room-chip">🏷️<span id="room-code-live">-----</span></div>
+    <button class="ico" id="g-music">🎵</button>
+    <button class="ico" id="g-sfx">🔊</button>
+    <button class="ico" id="g-rules">❓</button>
+  </div>
+
+  <div class="logbar"><i class="dotx"></i><div class="txt" id="logline">ยินดีต้อนรับสู่ห้องทดลอง!</div><button id="g-log">📜</button></div>
+
+  <div class="players p2" id="players">
+    <div class="pc" id="pc0"><div class="react"></div><div class="l1"><span class="avx">🧙</span><span class="nm">P1</span><span class="sc">0</span></div><div class="l2"></div></div>
+    <div class="pc" id="pc1"><div class="react"></div><div class="l1"><span class="avx">🧝</span><span class="nm">P2</span><span class="sc">0</span></div><div class="l2"></div></div>
+    <div class="pc" id="pc2"><div class="react"></div><div class="l1"><span class="avx">🧚</span><span class="nm">P3</span><span class="sc">0</span></div><div class="l2"></div></div>
+    <div class="pc" id="pc3"><div class="react"></div><div class="l1"><span class="avx">🦉</span><span class="nm">P4</span><span class="sc">0</span></div><div class="l2"></div></div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="machine" id="machine">
+      <div class="flashwrap" id="flashwrap"></div>
+      <div class="tankbar">🫙ถัง <b id="tank-count">0</b> • ⭐นับถอยหลัง <b id="skill-left">0</b> • 🏅กองกลาง <b id="skill-pool">0</b> • 🆘 <b id="help-left">21</b></div>
+      <div class="tracks" id="tracks">
+        <div class="track" data-t="0"><i class="lockline"></i></div>
+        <div class="track" data-t="1"><i class="lockline"></i></div>
+        <div class="track" data-t="2"><i class="lockline"></i></div>
+        <div class="track" data-t="3"><i class="lockline"></i></div>
+        <div class="track" data-t="4"><i class="lockline"></i></div>
+      </div>
+    </div>
+    <div class="stacks" id="stacks">
+      <div class="stk" data-s="0"><div class="ic">🧪</div><div class="nmx">—</div><div class="vl">0</div></div>
+      <div class="stk" data-s="1"><div class="ic">🧪</div><div class="nmx">—</div><div class="vl">0</div></div>
+      <div class="stk" data-s="2"><div class="ic">🧪</div><div class="nmx">—</div><div class="vl">0</div></div>
+      <div class="stk" data-s="3"><div class="ic">🧪</div><div class="nmx">—</div><div class="vl">0</div></div>
+      <div class="stk" data-s="4"><div class="ic">🧪</div><div class="nmx">—</div><div class="vl">0</div></div>
+    </div>
+  </div>
+
+  <div class="lab">
+    <div class="bannr" id="bannr"><span id="bannr-t">—</span><button class="btn sm tea" id="pend-done" style="display:none;padding:5px 9px">เสร็จ</button></div>
+    <div class="labtop">
+      <div class="own" id="lab-owner">โต๊ะของคุณ</div>
+      <div class="pool" id="pool">
+        <span class="pslot on"></span><span class="pslot on"></span><span class="pslot on"></span>
+        <span class="pslot"></span><span class="pslot"></span><span class="pslot"></span><span class="pslot"></span><span class="pslot"></span>
+      </div>
+    </div>
+    <div class="brewrow">
+      <div class="bw" id="bw0"><div class="h"><span class="ic">⬜</span><span class="nm">เตาว่าง</span><span class="vl">-</span></div>
+        <div class="slots"><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i></div></div>
+      <div class="bw" id="bw1"><div class="h"><span class="ic">⬜</span><span class="nm">เตาว่าง</span><span class="vl">-</span></div>
+        <div class="slots"><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i></div></div>
+    </div>
+    <div class="shelfwrap">
+      <div class="shelf" id="shelf"></div>
+      <button class="ico" id="g-allpot" style="width:28px;height:28px;min-width:28px;font-size:12px">🗄️</button>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn sm sec" id="act-help">🆘 อาจารย์ช่วย</button>
+    <button class="btn sm tea" id="act-auto">✨ วางอัตโนมัติ</button>
+    <button class="btn sm rose" id="act-cancel" style="display:none">✖ ยกเลิก</button>
+    <button class="btn sm" id="act-end">จบเทิร์น ▶</button>
+  </div>
+</section>
+
+<!-- ============ RESULT ============ -->
+<section id="sc-result" class="screen center">
+  <div class="wrap card" style="padding:16px">
+    <h2 style="font-size:20px;text-align:center">🏆 จบการสอบปลายภาค</h2>
+    <div id="r-win" style="text-align:center;font-size:15px;color:var(--gold);font-weight:700"></div>
+    <table class="rtab"><thead><tr><th>ผู้เล่น</th><th>🧪ยา</th><th>⭐×4</th><th>🆘×−2</th><th>รวม</th></tr></thead><tbody id="r-body"></tbody></table>
+    <div id="r-note" class="tiny muted" style="text-align:center"></div>
+    <div class="row"><button class="btn sec" id="r-menu" style="flex:1">เมนูหลัก</button><button class="btn" id="r-again" style="flex:1">เล่นอีกครั้ง</button></div>
+  </div>
+</section>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="modal-pick"><div class="card mbox">
+  <h3 id="mp-title">เลือก</h3><div class="tiny muted" id="mp-desc"></div>
+  <div class="opts" id="mp-opts"></div>
+  <button class="btn sec sm" id="mp-cancel">ยกเลิก</button>
+</div></div>
+
+<div class="modal" id="modal-log"><div class="card mbox">
+  <h3>📜 บันทึกเหตุการณ์</h3><div id="loglist"></div>
+  <button class="btn sm" id="log-close">ปิด</button>
+</div></div>
+
+<div class="modal" id="modal-rules"><div class="card mbox rules">
+  <h2 style="font-size:18px">📖 วิธีเล่น — ระเบิดยาอาคม</h2>
+  <p>วันนี้คือวันสอบปลายภาควิชาปรุงยา! เก็บลูกแก้ววัตถุดิบจากเครื่องจ่ายไปปรุงยาให้ได้คะแนนมากที่สุด</p>
+  <h3>🎯 เทิร์นของคุณ</h3>
+  <ul>
+    <li><b>บังคับ:</b> หยิบลูกแก้ว 1 ลูกจากเครื่องจ่าย (ลูกที่ 9 บนสุดของแต่ละรางหยิบไม่ได้ — มีเส้นประชมพูกำกับ)</li>
+    <li>เมื่อหยิบออก ลูกด้านบนจะไหลลง ถ้าลูก<b>สีเดียวกันชนกัน → ระเบิด!</b> เก็บลูกสีนั้นทั้งกลุ่มที่ต่อกัน</li>
+    <li>การไหลลงหลังระเบิดอาจทำให้ชนซ้ำ = <b>ลูกโซ่</b> เก็บได้หมด</li>
+    <li>ระหว่างเทิร์น จะ<b>ดื่มยา</b>ที่ปรุงเสร็จ และ/หรือ<b>ขออาจารย์ช่วย</b> (1 ครั้ง/เทิร์น) เมื่อไรก็ได้</li>
+    <li>วางวัตถุดิบลงช่องที่<b>ตรงสี</b>เท่านั้น • คลังเก็บได้ <b>3 ลูก</b> ส่วนเกินคืนถังตอนจบเทิร์น</li>
+    <li>จบเทิร์น: เติมสูตรยาใหม่จนมีเตาปรุง 2 ใบ (เลือกจาก 5 กอง)</li>
+  </ul>
+  <h3>🆘 อาจารย์ช่วย</h3>
+  <p>1 ครั้ง/เทิร์น: รับเบี้ย 1 อัน แล้วหยิบวัตถุดิบ 1 ลูก — <b>ไม่เกิดการระเบิด</b> • เบี้ยละ <b>−2 คะแนน</b></p>
+  <h3>⭐ เหรียญทักษะ (4 คะแนน/เหรียญ)</h3>
+  <ul>
+    <li>ปรุงยา<b>ชนิดเดียวกันครบ 3 ขวด</b> → ได้ 1 เหรียญ (ได้ 1 เหรียญต่อ 1 ชนิด)</li>
+    <li>ปรุงยา<b>ต่างชนิดกันครบ 5 ชนิด</b> → ได้ 1 เหรียญ (ได้ครั้งเดียวตลอดเกม)</li>
+    <li>ขวดยาไม่ถูกใช้หมดไป ยังคงนับคะแนนตามปกติ</li>
+  </ul>
+  <h3>🏁 จบเกม</h3>
+  <p>เมื่อกองเหรียญทักษะ "นับถอยหลัง" หมด หรือกองสูตรยากองใดหมด → เล่นต่อจนจบรอบ ให้ทุกคนได้เทิร์นเท่ากัน</p>
+  <p><b>คะแนนรวม</b> = คะแนนยาที่ปรุงเสร็จทุกขวด + เหรียญทักษะ×4 − เบี้ยอาจารย์ช่วย×2</p>
+  <p><b>เสมอ:</b> ผู้ที่เสมอกันผลัดหยิบวัตถุดิบคนละ 1 ลูก ใครได้มากกว่าชนะ</p>
+  <h3>🧪 ยาทั้ง 8 ชนิด (ทุกพลังไม่ทำให้เกิดการระเบิด)</h3>
+  <div id="rules-potions"></div>
+  <button class="btn" id="rules-close">เข้าใจแล้ว!</button>
+</div></div>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" onerror="window.__PEERFAIL=true"></script>
+<script>
+"use strict";
+/* =====================================================================
+   ระเบิดยาอาคม — POTION EXPLOSION (base game)
+   ===================================================================== */
+function showError(where, e){
+  try{
+    var p=document.getElementById('errpanel'), t=document.getElementById('errtext');
+    if(p&&t){ p.classList.add('on'); t.textContent += '['+where+'] '+((e&&e.message)?e.message:String(e))+'\n'; }
+    if(window.console&&console.error) console.error(where, e);
+  }catch(x){}
+}
+window.addEventListener('error', function(ev){ showError('runtime', ev.error||ev.message); });
+window.addEventListener('unhandledrejection', function(ev){ showError('promise', ev.reason); });
+
+function $(id){ return document.getElementById(id); }
+function el(tag,cls,txt){ var d=document.createElement(tag); if(cls)d.className=cls; if(txt!=null)d.textContent=txt; return d; }
+function clear(n){ while(n&&n.firstChild) n.removeChild(n.firstChild); }
+function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t; } return a; }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+/* ---------------- DATA ---------------- */
+var CNAME={R:'ผงไฟมังกร',Y:'ละอองนางฟ้า',B:'น้ำตายูนิคอร์น',K:'ควันเงามืด'};
+var CSHORT={R:'แดง',Y:'เหลือง',B:'น้ำเงิน',K:'ดำ'};
+var CLIST=['R','Y','B','K'];
+var POTIONS=[
+ {k:0,th:'ยาแห่งปัญญา',en:'Potion of Wisdom',icon:'📘',val:3,recipe:['B','B','R','Y'],
+  pw:'หยิบวัตถุดิบ 1 ลูกจากเครื่องจ่าย'},
+ {k:1,th:'น้ำอมฤตรักตาบอด',en:'Elixir of Blind Love',icon:'💘',val:3,recipe:['R','R','Y','K'],
+  pw:'ขโมยวัตถุดิบ 1 ลูกที่วางบนสูตรยาของผู้เล่นอื่น'},
+ {k:2,th:'ยาพลังแม่เหล็ก',en:'Potion of Magnetical Attraction',icon:'🧲',val:4,recipe:['Y','Y','B','B','K'],
+  pw:'หยิบวัตถุดิบ 2 ลูกที่ติดกันในรางเดียวกัน และต้องคนละสี'},
+ {k:3,th:'ยาปีติสีรุ้ง',en:'Potion of Prismatic Joy',icon:'🌈',val:4,recipe:['R','Y','B','K','K'],
+  pw:'วัตถุดิบทุกลูกในคลังตอนนี้ วางลงช่องใดก็ได้ ไม่ต้องตรงสี'},
+ {k:4,th:'ยาห้วงอเวจี',en:'Abyssal Draft',icon:'🌀',val:5,recipe:['K','K','K','B','B'],
+  pw:'หยิบวัตถุดิบจากแถวล่างสุดของเครื่องจ่าย ได้สูงสุดสีละ 1 ลูก'},
+ {k:5,th:'ทรายแห่งกาลเวลา',en:'Sands of Time',icon:'⏳',val:5,recipe:['R','R','Y','Y','B','B'],
+  pw:'ใช้พลังของยาขวดล่าสุดที่คุณดื่มไปแล้ว ซ้ำอีกครั้ง'},
+ {k:6,th:'ยาหนึบสุดขั้ว',en:'Balm of Uttermost Stickiness',icon:'🍯',val:6,recipe:['Y','Y','K','K','R','B'],
+  pw:'หยิบวัตถุดิบสีเดียวกันที่ติดกันตั้งแต่ 2 ลูกขึ้นไปในรางเดียวกัน'},
+ {k:7,th:'ยากลั่นลาวา',en:'Filter of Lavamancing',icon:'🌋',val:7,recipe:['R','R','K','K','B','Y','Y'],
+  pw:'ทิ้งวัตถุดิบสีเดียวกันในราง 1 ราง กลับลงถังได้สูงสุด 5 ลูก'}
+];
+var SKILL_COUNTDOWN={2:4,3:5,4:6};
+var SKILL_TOTAL=15;
+var AVATARS=['🧙‍♀️','🧝‍♂️','🧚','🦉'];
+var TRACK_CAP=9, LOCK_IDX=8, POOL_MAX=3;
+
+/* ---------------- AUDIO ---------------- */
+var AU={ctx:null,music:true,sfx:true,mg:null,master:null,timer:null,step:0,next:0,started:false};
+function auInit(){
+  try{
+    if(AU.ctx){ if(AU.ctx.state==='suspended') AU.ctx.resume(); return; }
+    var C=window.AudioContext||window.webkitAudioContext; if(!C) return;
+    AU.ctx=new C();
+    AU.master=AU.ctx.createGain(); AU.master.gain.value=.85; AU.master.connect(AU.ctx.destination);
+    AU.mg=AU.ctx.createGain(); AU.mg.gain.value=.0001; AU.mg.connect(AU.master);
+  }catch(e){ showError('audio',e); }
+}
+function tone(f,d,ty,v,when,dest){
+  try{ if(!AU.ctx) return;
+    var t=when||AU.ctx.currentTime, o=AU.ctx.createOscillator(), g=AU.ctx.createGain();
+    o.type=ty||'sine'; o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(Math.max(.0002,v||.2),t+.012);
+    g.gain.exponentialRampToValueAtTime(.0001,t+(d||.2));
+    o.connect(g); g.connect(dest||AU.master); o.start(t); o.stop(t+(d||.2)+.04);
+  }catch(e){}
+}
+function noise(d,v,f){
+  try{ if(!AU.ctx) return;
+    var n=Math.floor(AU.ctx.sampleRate*d), b=AU.ctx.createBuffer(1,n,AU.ctx.sampleRate), ch=b.getChannelData(0);
+    for(var i=0;i<n;i++) ch[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);
+    var s=AU.ctx.createBufferSource(); s.buffer=b;
+    var bp=AU.ctx.createBiquadFilter(); bp.type='lowpass'; bp.frequency.value=f||1200;
+    var g=AU.ctx.createGain(); g.gain.value=v||.25;
+    s.connect(bp); bp.connect(g); g.connect(AU.master); s.start();
+  }catch(e){}
+}
+function sfx(n){
+  if(!AU.sfx||!AU.ctx) return; var t=AU.ctx.currentTime;
+  try{
+    if(n==='tap') tone(680,.08,'triangle',.16);
+    else if(n==='select'){ tone(900,.1,'triangle',.2); tone(1340,.08,'sine',.11,t+.05); }
+    else if(n==='roll') tone(230+Math.random()*110,.06,'sine',.08);
+    else if(n==='boom'){ noise(.45,.32,900); tone(125,.3,'sawtooth',.2); tone(68,.5,'sine',.24,t+.02); }
+    else if(n==='place') tone(540,.08,'sine',.15);
+    else if(n==='done'){ [523,659,784,1047].forEach(function(f,i){ tone(f,.25,'triangle',.19,t+i*.07); }); }
+    else if(n==='drink'){ [720,580,450,350].forEach(function(f,i){ tone(f,.16,'sine',.17,t+i*.06); }); noise(.3,.1,600); }
+    else if(n==='skill'){ [784,988,1175,1568].forEach(function(f,i){ tone(f,.32,'sine',.19,t+i*.09); }); }
+    else if(n==='turn'){ tone(450,.11,'triangle',.13); tone(670,.13,'triangle',.12,t+.09); }
+    else if(n==='bad') tone(190,.2,'sawtooth',.15);
+    else if(n==='win'){ [523,659,784,1047,1319].forEach(function(f,i){ tone(f,.5,'triangle',.21,t+i*.13); }); }
+  }catch(e){}
+}
+var CHORDS=[[220,277.18,329.63],[174.61,220,261.63],[196,246.94,311.13],[164.81,207.65,246.94]];
+var ARP=[0,1,2,1,2,0,1,2];
+function musicStep(i,when){
+  var ch=CHORDS[Math.floor(i/8)%CHORDS.length], s=i%8;
+  if(s===0) tone(ch[0]/2,.62,'sine',.3,when,AU.mg);
+  tone(ch[ARP[s]]*2,.33,'triangle',.1,when,AU.mg);
+  if(s===4) tone(ch[2]*4,.5,'sine',.05,when,AU.mg);
+  if(i%32===26) tone(1568,.7,'sine',.045,when,AU.mg);
+}
+function musicStart(){
+  try{
+    auInit(); if(!AU.ctx||AU.started) return;
+    AU.started=true; AU.step=0; AU.next=AU.ctx.currentTime+.1;
+    AU.mg.gain.cancelScheduledValues(AU.ctx.currentTime);
+    AU.mg.gain.setValueAtTime(.0001,AU.ctx.currentTime);
+    AU.mg.gain.exponentialRampToValueAtTime(AU.music?.55:.0001,AU.ctx.currentTime+1.5);
+    AU.timer=setInterval(function(){
+      if(!AU.ctx) return; var t=AU.ctx.currentTime, g=0;
+      while(AU.next<t+.35 && g++<24){ musicStep(AU.step,AU.next); AU.step=(AU.step+1)%32; AU.next+=.235; }
+    },110);
+  }catch(e){ showError('music',e); }
+}
+function musicToggle(on){
+  AU.music=on; auInit(); if(!AU.ctx) return;
+  if(on&&!AU.started){ musicStart(); return; }
+  if(AU.mg){ AU.mg.gain.cancelScheduledValues(AU.ctx.currentTime);
+    AU.mg.gain.setValueAtTime(Math.max(.0001,AU.mg.gain.value),AU.ctx.currentTime);
+    AU.mg.gain.exponentialRampToValueAtTime(on?.55:.0001,AU.ctx.currentTime+.5); }
+}
+function refreshAudioBtns(){
+  ['m-music','g-music'].forEach(function(i){ var b=$(i); if(b) b.classList.toggle('off',!AU.music); });
+  ['m-sfx','g-sfx'].forEach(function(i){ var b=$(i); if(b) b.classList.toggle('off',!AU.sfx); });
+}
+
+/* ---------------- LOG ---------------- */
+var LOGS=[];
+function log(msg){
+  try{
+    LOGS.push(msg); if(LOGS.length>60) LOGS.shift();
+    var l=$('logline'); if(l){ l.textContent=msg; l.classList.remove('flash'); void l.offsetWidth; l.classList.add('flash'); }
+  }catch(e){}
+}
+function openLog(){
+  var box=$('loglist'); clear(box);
+  for(var i=LOGS.length-1;i>=0;i--) box.appendChild(el('div',null,LOGS[i]));
+  if(!LOGS.length) box.appendChild(el('div',null,'ยังไม่มีเหตุการณ์'));
+  $('modal-log').classList.add('on');
+}
+
+/* ---------------- DISPENSER ENGINE ---------------- */
+var MID=1;
+function newDispenser(){
+  var bag=[],i,ci;
+  for(ci=0;ci<4;ci++) for(i=0;i<20;i++) bag.push({id:MID++,c:CLIST[ci]});
+  shuffle(bag);
+  var tracks=[[],[],[],[],[]];
+  for(var t=0;t<5;t++) for(i=0;i<TRACK_CAP;i++) tracks[t].push(bag.pop());
+  return {tracks:tracks,tank:bag};
+}
+function snapOf(D){
+  var s=[],t,i;
+  for(t=0;t<5;t++){ var a=[]; for(i=0;i<D.tracks[t].length;i++) a.push({id:D.tracks[t][i].id,c:D.tracks[t][i].c}); s.push(a); }
+  return s;
+}
+/* collision at junction "pos": tr[pos-1] vs tr[pos]; chains resolved */
+function explodeAt(D,ti,pos,ev,got){
+  var tr=D.tracks[ti],guard=0;
+  while(guard++<60 && pos>0 && pos<tr.length && tr[pos-1].c===tr[pos].c){
+    var col=tr[pos].c,a=pos-1,b=pos;
+    while(a-1>=0 && tr[a-1].c===col) a--;
+    while(b+1<tr.length && tr[b+1].c===col) b++;
+    var grp=tr.slice(a,b+1);
+    ev.push({type:'explode',ids:grp.map(function(m){return m.id;}),c:col,n:grp.length});
+    tr.splice(a,grp.length);
+    for(var i=0;i<grp.length;i++) got.push(grp[i]);
+    ev.push({type:'fall',snap:snapOf(D)});
+    pos=a;
+  }
+}
+function refill(D,ev,got,explo){
+  var dirty=false;
+  for(var t=0;t<5;t++){
+    var guard=0;
+    while(D.tracks[t].length<TRACK_CAP && D.tank.length>0 && guard++<200){
+      var m=D.tank.pop(); D.tracks[t].push(m); dirty=true;
+      if(explo){
+        var top=D.tracks[t].length-1;
+        if(top>0 && D.tracks[t][top-1].c===m.c){
+          ev.push({type:'fall',snap:snapOf(D)}); dirty=false;
+          explodeAt(D,t,top,ev,got);
+        }
+      }
+    }
+  }
+  if(dirty) ev.push({type:'fall',snap:snapOf(D)});
+}
+/* remove a set of indices from one track (sorted any order) */
+function removeIdx(D,ti,idxs,explo){
+  var ev=[],got=[],tr=D.tracks[ti];
+  var s=idxs.slice().sort(function(a,b){return b-a;});
+  var valid=[],i;
+  for(i=0;i<s.length;i++) if(s[i]>=0&&s[i]<tr.length) valid.push(s[i]);
+  if(!valid.length) return {ev:ev,got:got};
+  for(i=0;i<valid.length;i++){ got.push(tr[valid[i]]); tr.splice(valid[i],1); }
+  ev.push({type:'fall',snap:snapOf(D)});
+  if(explo) explodeAt(D,ti,valid[valid.length-1],ev,got);
+  refill(D,ev,got,explo);
+  return {ev:ev,got:got};
+}
+/* discard (to tank, not collected) */
+function discardIdx(D,ti,idxs){
+  var ev=[],got=[],tr=D.tracks[ti];
+  var s=idxs.slice().sort(function(a,b){return b-a;}),i;
+  for(i=0;i<s.length;i++){ if(s[i]>=0&&s[i]<tr.length){ D.tank.push(tr[s[i]]); tr.splice(s[i],1); } }
+  shuffle(D.tank);
+  ev.push({type:'fall',snap:snapOf(D)});
+  refill(D,ev,got,false);
+  return {ev:ev,got:got};
+}
+/* ---- SELF TEST ---- */
+function selfTest(){
+  var fails=[];
+  function mk(arr){ var t=[]; for(var i=0;i<arr.length;i++) t.push({id:9000+i,c:arr[i]}); return t; }
+  function D(tr){ return {tracks:[tr,[],[],[],[]],tank:[]}; }
+  // 1) simple collision
+  var d=D(mk(['R','Y','R','R'])); var r=removeIdx(d,0,[1],true);
+  if(r.got.length!==3) fails.push('T1 ได้ '+r.got.length+' (ควร 3)');
+  // 2) no collision when taking bottom
+  d=D(mk(['R','Y','B'])); r=removeIdx(d,0,[0],true);
+  if(r.got.length!==1) fails.push('T2 ได้ '+r.got.length+' (ควร 1)');
+  // 3) chain reaction
+  d=D(mk(['B','B','R','Y','R','B'])); r=removeIdx(d,0,[3],true);
+  if(r.got.length!==5) fails.push('T3 ได้ '+r.got.length+' (ควร 5)');
+  // 4) group of 3+
+  d=D(mk(['Y','R','Y','Y','Y'])); r=removeIdx(d,0,[1],true);
+  if(r.got.length!==5) fails.push('T4 ได้ '+r.got.length+' (ควร 5)');
+  // 5) no-explosion mode
+  d=D(mk(['R','Y','R','R'])); r=removeIdx(d,0,[1],false);
+  if(r.got.length!==1) fails.push('T5 ได้ '+r.got.length+' (ควร 1)');
+  // 6) take top marble -> no collision
+  d=D(mk(['R','B','Y'])); r=removeIdx(d,0,[2],true);
+  if(r.got.length!==1) fails.push('T6 ได้ '+r.got.length+' (ควร 1)');
+  if(fails.length) showError('self-test',new Error(fails.join(' | ')));
+  else if(window.console&&console.log) console.log('✅ engine self-test ผ่านทั้ง 6 เคส');
+}
+
+/* ---------------- STATE ---------------- */
+var S=null;
+var UI={mode:'solo',myIdx:0,isHost:true,sel:-1,animating:false,localModal:false,lastCfg:null};
+var MEL={}, trackEls=[], pcEls=[], stkEls=[], bwEls=[];
+
+function mkTile(k){ var f=[],i; for(i=0;i<POTIONS[k].recipe.length;i++) f.push(null); return {k:k,fill:f}; }
+function mkPlayer(i,name,isBot,level){
+  return {i:i,name:name,av:AVATARS[i],isBot:!!isBot,level:level||'normal',dc:false,
+          brew:[null,null],pool:[],done:[],skill:0,help:0,
+          skillSame:{},skillDiff:false,lastDrunk:null,drunkList:[]};
+}
+function startGame(cfg){
+  try{
+    UI.lastCfg=clone(cfg);
+    var n=cfg.players.length, i, k, j;
+    LOGS=[];
+    S={mode:cfg.mode,n:n,players:cfg.players.map(function(p,idx){return mkPlayer(idx,p.name,p.isBot,p.level);}),
+       cur:0,first:0,phase:'draft',disp:newDispenser(),tankCount:0,
+       stacks:[[],[],[],[],[]],typeStacks:null,
+       skillCountdown:(SKILL_COUNTDOWN[n]||4),skillPool:SKILL_TOTAL-(SKILL_COUNTDOWN[n]||4),
+       helpLeft:21,endTrig:false,pend:null,turn:{took:false,helped:false},
+       draft:{i:0,n:0},room:cfg.room||'',tieWinner:null};
+    S.first=Math.floor(Math.random()*n); S.cur=S.first; S.draft.i=S.first;
+    var ts=[]; for(k=0;k<8;k++){ var a=[]; for(j=0;j<8;j++) a.push(k); ts.push(a); }
+    S.typeStacks=ts;
+    S.pend={k:'draft'};
+    MEL={}; for(i=0;i<trackEls.length;i++){ var tr=trackEls[i]; var ll=tr.querySelector('.lockline'); clear(tr); if(ll) tr.appendChild(ll); }
+    showScreen('sc-game');
+    $('players').className='players p'+n;
+    for(i=0;i<4;i++) pcEls[i].classList.toggle('on',i<n);
+    $('room-chip').classList.toggle('on',S.mode==='online');
+    $('room-code-live').textContent=S.room||'-----';
+    log('🔔 เริ่มเกม! ผู้เล่นคนแรกคือ '+S.players[S.first].name);
+    fitBoard(); applySnap(snapOf(S.disp));
+    render(); broadcast(); autoPilot();
+  }catch(e){ showError('startGame',e); }
+}
+function finishDraft(){
+  var rest=[],k,j;
+  for(k=0;k<8;k++) for(j=0;j<S.typeStacks[k].length;j++) rest.push(k);
+  shuffle(rest);
+  S.stacks=[[],[],[],[],[]];
+  for(var i=0;i<rest.length;i++) S.stacks[i%5].push(rest[i]);
+  S.typeStacks=null; S.phase='play'; S.cur=S.first; S.pend=null;
+  log('📋 แจกกองสูตรยาเรียบร้อย — เริ่มเล่น!');
+  beginTurn();
+}
+function beginTurn(){
+  S.turn={took:false,helped:false}; S.pend=null; UI.sel=-1;
+  sfx('turn'); log('▶ เทิร์นของ '+S.players[S.cur].name);
+  render(); broadcast(); autoPilot();
+}
+function autoPilot(){
+  if(!S||S.phase==='over') return;
+  if(UI.mode==='online'&&!UI.isHost) return;
+  var who=(S.phase==='draft')?S.draft.i:S.cur, p=S.players[who];
+  if(!p) return;
+  if(p.isBot||p.dc) setTimeout(function(){ botAct(who); },600);
+}
+
+/* ---------------- RENDER: dispenser ---------------- */
+function applySnap(snap){
+  try{
+    var seen={},t,i;
+    for(t=0;t<5;t++){
+      var col=trackEls[t]; if(!col) continue;
+      for(i=0;i<snap[t].length;i++){
+        var m=snap[t][i]; seen[m.id]=1;
+        var e=MEL[m.id];
+        if(!e){
+          e=el('div','marble c'+m.c); e.dataset.id=m.id;
+          e.style.setProperty('--i',TRACK_CAP+0.7); e.classList.add('newin');
+          col.appendChild(e); MEL[m.id]=e; void e.offsetWidth; e.classList.remove('newin');
+        }
+        if(e.parentNode!==col) col.appendChild(e);
+        e.style.setProperty('--i',i);
+        e.dataset.track=t; e.dataset.idx=i;
+        e.classList.toggle('locked',i>=LOCK_IDX);
+      }
+    }
+    for(var id in MEL){
+      if(!seen[id]){
+        (function(x){ x.classList.add('gone'); setTimeout(function(){ if(x.parentNode) x.parentNode.removeChild(x); },300); })(MEL[id]);
+        delete MEL[id];
+      }
+    }
+  }catch(e){ showError('applySnap',e); }
+}
+async function playEvents(ev){
+  if(!ev||!ev.length) return;
+  UI.animating=true;
+  try{
+    for(var i=0;i<ev.length;i++){
+      var e=ev[i];
+      if(e.type==='explode'){
+        await sleep(150);
+        for(var j=0;j<e.ids.length;j++){ var m=MEL[e.ids[j]]; if(m) m.classList.add('boom'); }
+        var fw=$('flashwrap'); if(fw){ fw.classList.remove('on'); void fw.offsetWidth; fw.classList.add('on'); }
+        sfx('boom');
+        if(S) react(S.cur, e.n>=4?'🤯':'💥');
+        await sleep(380);
+      }else{
+        applySnap(e.snap); if(i%2===0) sfx('roll');
+        await sleep(165);
+      }
+    }
+  }catch(err){ showError('playEvents',err); }
+  UI.animating=false;
+  render();
+}
+function fitBoard(){
+  try{
+    var st=$('stage'); if(!st) return;
+    var w=st.clientWidth, h=st.clientHeight;
+    if(!w||!h) return;
+    var sh=$('stacks')?$('stacks').offsetHeight:44;
+    var avail=h-sh-40;
+    var cw=Math.floor((Math.min(w,480)-40)/5)-5;
+    var ch=Math.floor(avail/9);
+    var cell=Math.max(13,Math.min(34,Math.min(cw,ch)));
+    document.documentElement.style.setProperty('--cell',cell+'px');
+  }catch(e){}
+}
+
+/* ---------------- ACTIONS ---------------- */
+function dispatch(a){
+  try{
+    if(!S) return;
+    if(UI.mode==='online'&&!UI.isHost){ netSend({t:'action',a:a}); return; }
+    var by=(UI.mode==='online')?UI.myIdx:((S.phase==='draft')?S.draft.i:S.cur);
+    applyAction(a,by);
+  }catch(e){ showError('dispatch',e); }
+}
+async function applyAction(a,by){
+  try{
+    if(!S||S.phase==='over'||!a) return;
+    if(S.phase==='draft'){
+      if(by!==S.draft.i) return;
+      if(a.t==='draftPick') doDraftPick(a.k);
+      render(); broadcast(); return;
+    }
+    if(by!==S.cur) return;
+    var p=S.players[S.cur];
+    if(a.t==='take') await doTake(a.track,a.idx);
+    else if(a.t==='help') doAskHelp();
+    else if(a.t==='place') doPlace(a.mi,a.b,a.s);
+    else if(a.t==='drink') doDrink(a.di);
+    else if(a.t==='target') await doTarget(a);
+    else if(a.t==='pendDone') pendFinish();
+    else if(a.t==='cancel') doCancel();
+    else if(a.t==='auto') doAutoPlace(p,true);
+    else if(a.t==='end') doEndTurn();
+    render(); broadcast(); autoPilot();
+  }catch(e){
+    showError('action:'+(a&&a.t),e);
+    try{ if(S){ S.pend=null; UI.animating=false; render(); } }catch(x){}
+  }
+}
+function doDraftPick(k){
+  if(k==null||k<0||k>7) return;
+  if(!S.typeStacks[k]||!S.typeStacks[k].length){ log('สูตรยาชนิดนี้หมดแล้ว'); sfx('bad'); return; }
+  var p=S.players[S.draft.i];
+  var slot=p.brew[0]?1:0;
+  if(p.brew[0]&&p.brew[1]) return;
+  S.typeStacks[k].pop(); p.brew[slot]=mkTile(k); sfx('place');
+  log('📋 '+p.name+' เลือก '+POTIONS[k].th);
+  S.draft.n++;
+  if(S.draft.n>=2){
+    S.draft.n=0; S.draft.i=(S.draft.i+1)%S.n;
+    if(S.draft.i===S.first){ finishDraft(); return; }
+  }
+  autoPilot();
+}
+function addGot(p,got){ for(var i=0;i<got.length;i++) p.pool.push({c:got[i].c,w:false}); }
+async function doTake(ti,idx){
+  if(S.turn.took){ log('⚠️ เทิร์นนี้หยิบไปแล้ว'); sfx('bad'); return; }
+  if(idx>=LOCK_IDX){ log('⚠️ ลูกที่ 9 หยิบไม่ได้'); sfx('bad'); return; }
+  var tr=S.disp.tracks[ti]; if(!tr||idx<0||idx>=tr.length) return;
+  var e=MEL[tr[idx].id]; if(e) e.classList.add('chosen');
+  sfx('select'); await sleep(190); if(e) e.classList.remove('chosen');
+  var r=removeIdx(S.disp,ti,[idx],true);
+  S.turn.took=true;
+  var p=S.players[S.cur]; addGot(p,r.got);
+  if(UI.mode==='online'&&UI.isHost){ S.tankCount=S.disp.tank.length; broadcast(r.ev); }
+  await playEvents(r.ev);
+  log('🫳 '+p.name+' เก็บวัตถุดิบได้ '+r.got.length+' ลูก'+(r.got.length>1?' 💥':''));
+  if(r.got.length>=4) react(S.cur,'🤩');
+  render();
+}
+function doAskHelp(){
+  if(S.turn.helped){ log('⚠️ เทิร์นนี้ขอช่วยไปแล้ว'); sfx('bad'); return; }
+  if(S.helpLeft<=0){ log('⚠️ เบี้ยอาจารย์ช่วยหมด'); sfx('bad'); return; }
+  if(S.pend){ log('⚠️ ทำสิ่งที่ค้างให้เสร็จก่อน'); sfx('bad'); return; }
+  S.pend={k:'marbleOne',src:'help'};
+  log('🆘 เลือกวัตถุดิบ 1 ลูก (ไม่เกิดการระเบิด)');
+}
+function canPlace(p,mi,b,s){
+  var tile=p.brew[b]; if(!tile) return false;
+  var rc=POTIONS[tile.k].recipe;
+  if(s<0||s>=rc.length) return false;
+  if(tile.fill[s]) return false;
+  var m=p.pool[mi]; if(!m) return false;
+  return !!m.w || m.c===rc[s];
+}
+function doPlace(mi,b,s){
+  var p=S.players[S.cur];
+  if(mi==null||mi<0||mi>=p.pool.length) return;
+  var tile=p.brew[b];
+  if(!tile){ log('⚠️ เตานี้ว่าง'); sfx('bad'); return; }
+  if(tile.fill[s]){ log('⚠️ ช่องนี้เต็มแล้ว'); sfx('bad'); return; }
+  if(!canPlace(p,mi,b,s)){ log('⚠️ สีไม่ตรงสูตร ต้องใช้'+CNAME[POTIONS[tile.k].recipe[s]]); sfx('bad'); return; }
+  tile.fill[s]=POTIONS[tile.k].recipe[s];
+  p.pool.splice(mi,1); UI.sel=-1; sfx('place');
+  checkComplete(p,b);
+}
+function checkComplete(p,b){
+  var tile=p.brew[b]; if(!tile) return;
+  for(var i=0;i<tile.fill.length;i++) if(!tile.fill[i]) return;
+  var P=POTIONS[tile.k];
+  p.brew[b]=null; p.done.push({k:tile.k,drunk:false});
+  sfx('done'); react(p.i,'🎉');
+  log('✨ '+p.name+' ปรุง '+P.th+' สำเร็จ! +'+P.val+' คะแนน');
+  checkSkills(p);
+}
+function checkSkills(p){
+  var cnt={},i,k;
+  for(i=0;i<p.done.length;i++) cnt[p.done[i].k]=(cnt[p.done[i].k]||0)+1;
+  for(k in cnt){ if(cnt[k]>=3 && !p.skillSame[k]){ p.skillSame[k]=true; awardSkill(p,'ยา '+POTIONS[k].th+' ครบ 3 ขวด'); } }
+  var kinds=0; for(k in cnt) kinds++;
+  if(kinds>=5 && !p.skillDiff){ p.skillDiff=true; awardSkill(p,'ยาต่างชนิดครบ 5 ชนิด'); }
+}
+function awardSkill(p,why){
+  if(S.skillCountdown>0){
+    S.skillCountdown--; p.skill++;
+    if(S.skillCountdown===0) triggerEnd('กองเหรียญนับถอยหลังหมด');
+  } else if(S.skillPool>0){ S.skillPool--; p.skill++; }
+  else { log('⭐ เหรียญทักษะหมดแล้ว'); return; }
+  sfx('skill'); react(p.i,'⭐');
+  log('⭐ '+p.name+' ได้เหรียญทักษะ! ('+why+') +4 คะแนน');
+}
+function triggerEnd(why){
+  if(S.endTrig) return;
+  S.endTrig=true;
+  log('🔔 จบเกมถูกกระตุ้น ('+why+') — เล่นต่อจนครบรอบ');
+  react(S.cur,'😱');
+}
+function doAutoPlace(p,verbose){
+  var moved=0,guard=0;
+  while(guard++<40){
+    var did=false;
+    for(var mi=0;mi<p.pool.length&&!did;mi++){
+      var best=null;
+      for(var b=0;b<2;b++){
+        var tile=p.brew[b]; if(!tile) continue;
+        var rc=POTIONS[tile.k].recipe;
+        for(var s=0;s<rc.length;s++){
+          if(canPlace(p,mi,b,s)){
+            var need=0; for(var q=0;q<tile.fill.length;q++) if(!tile.fill[q]) need++;
+            var pri=need*10-POTIONS[tile.k].val;
+            if(!best||pri<best.pri) best={b:b,s:s,pri:pri};
+          }
+        }
+      }
+      if(best){ doPlace(mi,best.b,best.s); moved++; did=true; }
+    }
+    if(!did) break;
+  }
+  if(verbose&&!moved) log('ℹ️ ไม่มีวัตถุดิบที่วางลงสูตรได้');
+  return moved;
+}
+function doDrink(di){
+  var p=S.players[S.cur], d=p.done[di];
+  if(!d) return;
+  if(d.drunk){ log('⚠️ ยาขวดนี้ดื่มไปแล้ว'); sfx('bad'); return; }
+  if(S.pend){ log('⚠️ ทำสิ่งที่ค้างให้เสร็จก่อน'); sfx('bad'); return; }
+  var P=POTIONS[d.k];
+  if(d.k===5 && p.lastDrunk==null){ log('⚠️ ยังไม่เคยดื่มยาขวดอื่น ใช้ทรายแห่งกาลเวลาไม่ได้'); sfx('bad'); return; }
+  if(!powerUsable(p,d.k===5?p.lastDrunk:d.k)){ log('⚠️ ตอนนี้ยังใช้พลังของ '+P.th+' ไม่ได้'); sfx('bad'); return; }
+  d.drunk=true; sfx('drink'); react(p.i,'🥤');
+  var eff=d.k;
+  if(d.k===5){ eff=p.lastDrunk; log('⏳ '+p.name+' ดื่มทรายแห่งกาลเวลา → ใช้พลัง '+POTIONS[eff].th+' ซ้ำ'); }
+  else log('🥤 '+p.name+' ดื่ม '+P.th+' — '+P.pw);
+  if(d.k!==5){ p.lastDrunk=d.k; }
+  p.drunkList.push(d.k);
+  startPower(eff);
+}
+function powerUsable(p,k){
+  if(k==null) return false;
+  if(k===1){ // steal
+    for(var i=0;i<S.n;i++){
+      if(i===p.i) continue;
+      var v=S.players[i];
+      for(var b=0;b<2;b++){ var t=v.brew[b]; if(!t) continue;
+        for(var s=0;s<t.fill.length;s++) if(t.fill[s]) return true; }
+    }
+    return false;
+  }
+  if(k===3) return p.pool.length>0;
+  return true;
+}
+function startPower(k){
+  var p=S.players[S.cur];
+  if(k===0) S.pend={k:'marbleOne',src:'potion'};
+  else if(k===1) S.pend={k:'steal'};
+  else if(k===2) S.pend={k:'adjDiff',step:1,t1:null,i1:null};
+  else if(k===3){ for(var i=0;i<p.pool.length;i++) p.pool[i].w=true; S.pend=null; log('🌈 วัตถุดิบในคลังทั้งหมดวางได้ทุกช่อง!'); }
+  else if(k===4) S.pend={k:'abyss',taken:{},count:0};
+  else if(k===6) S.pend={k:'run'};
+  else if(k===7) S.pend={k:'discard'};
+  else S.pend=null;
+}
+function pendFinish(){
+  if(!S.pend) return;
+  if(S.pend.k==='abyss'){ log('🌀 จบการใช้ยาห้วงอเวจี ('+S.pend.count+' ลูก)'); S.pend=null; return; }
+  S.pend=null;
+}
+function doCancel(){
+  if(!S.pend){ return; }
+  if(S.pend.k==='chooseTile'){ log('⚠️ ต้องเลือกสูตรยาก่อน'); sfx('bad'); return; }
+  if(S.pend.k==='abyss'){ pendFinish(); return; }
+  if(S.pend.step===2){ log('ℹ️ ยกเลิกการเลือกลูกที่ 2'); S.pend.step=1; S.pend.t1=null; S.pend.i1=null; return; }
+  S.pend=null; UI.sel=-1; log('ℹ️ ยกเลิกแล้ว');
+}
+async function doTarget(a){
+  var pd=S.pend; if(!pd) return;
+  var p=S.players[S.cur],i;
+  if(pd.k==='marbleOne'&&a.kind==='marble'){
+    if(!validIdx(a.track,a.idx)) return;
+    if(pd.src==='help'){ S.helpLeft--; p.help++; S.turn.helped=true; log('🆘 '+p.name+' รับเบี้ยอาจารย์ช่วย (−2 คะแนน)'); }
+    S.pend=null;
+    await pull(a.track,[a.idx]);
+  }
+  else if(pd.k==='adjDiff'&&a.kind==='marble'){
+    if(!validIdx(a.track,a.idx)) return;
+    if(pd.step===1){ pd.t1=a.track; pd.i1=a.idx; pd.step=2; log('🧲 เลือกลูกที่ติดกัน และต้องคนละสี'); render(); return; }
+    if(a.track!==pd.t1||Math.abs(a.idx-pd.i1)!==1){ log('⚠️ ต้องเป็นลูกที่ติดกันในรางเดียวกัน'); sfx('bad'); return; }
+    if(S.disp.tracks[a.track][a.idx].c===S.disp.tracks[pd.t1][pd.i1].c){ log('⚠️ ต้องคนละสี!'); sfx('bad'); return; }
+    var t1=pd.t1,i1=pd.i1; S.pend=null;
+    await pull(t1,[i1,a.idx]);
+  }
+  else if(pd.k==='run'&&a.kind==='marble'){
+    if(!validIdx(a.track,a.idx)) return;
+    var tr=S.disp.tracks[a.track],col=tr[a.idx].c,lo=a.idx,hi=a.idx;
+    while(lo-1>=0&&tr[lo-1].c===col) lo--;
+    while(hi+1<tr.length&&tr[hi+1].c===col&&hi+1<LOCK_IDX) hi++;
+    if(hi-lo+1<2){ log('⚠️ ต้องมีสีเดียวกันติดกันอย่างน้อย 2 ลูก'); sfx('bad'); return; }
+    var list=[]; for(i=lo;i<=hi;i++) list.push(i);
+    S.pend=null;
+    log('🍯 หยิบ '+CNAME[col]+' ติดกัน '+list.length+' ลูก');
+    await pull(a.track,list);
+  }
+  else if(pd.k==='abyss'&&a.kind==='marble'){
+    if(a.idx!==0){ log('⚠️ เลือกได้เฉพาะลูกล่างสุดของราง'); sfx('bad'); return; }
+    if(!validIdx(a.track,a.idx)) return;
+    var c=S.disp.tracks[a.track][0].c;
+    if(pd.taken[c]){ log('⚠️ หยิบ'+CSHORT[c]+'ไปแล้ว (สีละ 1 ลูก)'); sfx('bad'); return; }
+    pd.taken[c]=1; pd.count++;
+    var done=(pd.count>=4);
+    await pull(a.track,[0]);
+    if(done){ log('🌀 ครบทั้ง 4 สีแล้ว'); S.pend=null; }
+    else if(S.pend) S.pend.taken=pd.taken;
+  }
+  else if(pd.k==='discard'&&a.kind==='marble'){
+    if(!validIdx(a.track,a.idx)) return;
+    var trk=S.disp.tracks[a.track],cc=trk[a.idx].c,idxs=[];
+    for(i=0;i<trk.length&&i<LOCK_IDX;i++){ if(trk[i].c===cc&&idxs.length<5) idxs.push(i); }
+    S.pend=null;
+    var rr=discardIdx(S.disp,a.track,idxs);
+    S.tankCount=S.disp.tank.length;
+    sfx('select'); log('🌋 ทิ้ง'+CNAME[cc]+' '+idxs.length+' ลูกกลับลงถัง');
+    if(UI.mode==='online'&&UI.isHost) broadcast(rr.ev);
+    await playEvents(rr.ev);
+  }
+  else if(pd.k==='steal'&&a.kind==='steal'){
+    var vic=S.players[a.p];
+    if(!vic||vic===p) return;
+    var tl=vic.brew[a.b];
+    if(!tl||!tl.fill[a.s]){ log('⚠️ เป้าหมายไม่ถูกต้อง'); sfx('bad'); return; }
+    var col2=tl.fill[a.s]; tl.fill[a.s]=null;
+    p.pool.push({c:col2,w:false});
+    sfx('select'); react(a.p,'😱');
+    log('💘 '+p.name+' ขโมย'+CNAME[col2]+'จาก '+vic.name);
+    S.pend=null;
+  }
+  else if(pd.k==='chooseTile'&&a.kind==='stack'){
+    var st=S.stacks[a.si];
+    if(!st||!st.length){ log('⚠️ กองนี้ว่างแล้ว'); sfx('bad'); return; }
+    var k=st.pop();
+    p.brew[pd.slot]=mkTile(k); sfx('place');
+    log('📋 '+p.name+' รับสูตร '+POTIONS[k].th);
+    if(st.length===0) triggerEnd('กองสูตรยาหมด 1 กอง');
+    S.pend=null; refillBrew();
+  }
+}
+function validIdx(t,i){
+  if(t==null||i==null) return false;
+  var tr=S.disp.tracks[t];
+  if(!tr||i<0||i>=tr.length) return false;
+  if(i>=LOCK_IDX){ log('⚠️ ลูกที่ 9 เลือกไม่ได้'); sfx('bad'); return false; }
+  return true;
+}
+async function pull(ti,idxs){
+  var p=S.players[S.cur],i;
+  for(i=0;i<idxs.length;i++){ var m=S.disp.tracks[ti][idxs[i]]; if(m&&MEL[m.id]) MEL[m.id].classList.add('chosen'); }
+  sfx('select'); await sleep(170);
+  var r=removeIdx(S.disp,ti,idxs,false);
+  addGot(p,r.got); S.tankCount=S.disp.tank.length;
+  if(UI.mode==='online'&&UI.isHost) broadcast(r.ev);
+  await playEvents(r.ev);
+  render();
+}
+function doEndTurn(){
+  var p=S.players[S.cur];
+  if(!S.turn.took&&hasAnyMarble()){ log('⚠️ ต้องหยิบวัตถุดิบ 1 ลูกก่อนจบเทิร์น'); sfx('bad'); return; }
+  if(S.pend){ log('⚠️ ทำสิ่งที่ค้างให้เสร็จก่อน'); sfx('bad'); return; }
+  var lost=0;
+  while(p.pool.length>POOL_MAX){ var m=p.pool.pop(); S.disp.tank.push({id:MID++,c:m.c}); lost++; }
+  if(lost){ shuffle(S.disp.tank); log('🫙 คลังเกิน 3 — คืนถัง '+lost+' ลูก'); }
+  for(var i=0;i<p.pool.length;i++) p.pool[i].w=false;
+  S.tankCount=S.disp.tank.length;
+  refillBrew();
+}
+function refillBrew(){
+  var p=S.players[S.cur],empty=-1,i;
+  for(i=0;i<2;i++) if(!p.brew[i]){ empty=i; break; }
+  var avail=false;
+  for(i=0;i<5;i++) if(S.stacks[i].length) avail=true;
+  if(empty>=0&&avail){ S.pend={k:'chooseTile',slot:empty}; render(); broadcast(); autoPilot(); return; }
+  finishTurn();
+}
+function hasAnyMarble(){ for(var t=0;t<5;t++) if(S.disp.tracks[t].length>0) return true; return false; }
+function finishTurn(){
+  var nxt=(S.cur+1)%S.n;
+  if(S.endTrig&&nxt===S.first){ gameOver(); return; }
+  if(!hasAnyMarble()&&S.disp.tank.length===0){ log('🫙 วัตถุดิบหมดเกลี้ยง!'); gameOver(); return; }
+  S.cur=nxt; beginTurn();
+}
+function potionPts(p){ var v=0; for(var i=0;i<p.done.length;i++) v+=POTIONS[p.done[i].k].val; return v; }
+function scoreOf(p){ return potionPts(p)+p.skill*4-p.help*2; }
+async function gameOver(){
+  S.phase='over'; S.pend=null; render(); broadcast();
+  sfx('win'); log('🏁 จบเกม!');
+  var best=-999,i;
+  for(i=0;i<S.n;i++) best=Math.max(best,scoreOf(S.players[i]));
+  var tied=[]; for(i=0;i<S.n;i++) if(scoreOf(S.players[i])===best) tied.push(S.players[i]);
+  var note='';
+  if(tied.length>1){
+    note='เสมอ '+tied.length+' คน → ตัดสินด้วยการหยิบวัตถุดิบ: ';
+    var res=[];
+    for(i=0;i<tied.length;i++){
+      var pick=botBestPick(tied[i],'normal'), got=0;
+      if(pick){ var r=removeIdx(S.disp,pick.t,pick.i,true); got=r.got.length; await playEvents(r.ev); }
+      res.push({p:tied[i],g:got}); note+=tied[i].name+'='+got+' ';
+    }
+    res.sort(function(a,b){ return b.g-a.g; });
+    S.tieWinner=res[0].p.i;
+  }
+  showResult(note); broadcast();
+}
+function showResult(note){
+  try{
+    var body=$('r-body'); clear(body);
+    var arr=S.players.slice().sort(function(a,b){
+      var d=scoreOf(b)-scoreOf(a); if(d!==0) return d;
+      if(S.tieWinner!=null){ if(a.i===S.tieWinner) return -1; if(b.i===S.tieWinner) return 1; }
+      return 0;
+    });
+    for(var i=0;i<arr.length;i++){
+      var p=arr[i],tr=el('tr'); if(i===0) tr.className='win';
+      var cells=[(i===0?'👑 ':'')+p.av+' '+p.name,String(potionPts(p)),String(p.skill*4),String(-p.help*2),String(scoreOf(p))];
+      for(var j=0;j<cells.length;j++) tr.appendChild(el('td',null,cells[j]));
+      body.appendChild(tr);
+    }
+    $('r-win').textContent='🏆 '+arr[0].av+' '+arr[0].name+' ชนะด้วย '+scoreOf(arr[0])+' คะแนน!';
+    $('r-note').textContent=note||'';
+    showScreen('sc-result');
+  }catch(e){ showError('showResult',e); }
+}
+
+/* ---------------- RENDER ---------------- */
+function iCanAct(){
+  if(!S||S.phase==='over'||UI.animating) return false;
+  var who=(S.phase==='draft')?S.draft.i:S.cur;
+  if(!S.players[who]) return false;
+  if(UI.mode==='online') return who===UI.myIdx&&!S.players[who].isBot&&!S.players[who].dc;
+  return !S.players[who].isBot;
+}
+function viewPlayer(){
+  if(!S) return null;
+  if(UI.mode==='online') return S.players[UI.myIdx]||S.players[0];
+  return S.players[(S.phase==='draft')?S.draft.i:S.cur];
+}
+function render(){
+  if(!S) return;
+  try{ renderTop(); }catch(e){ showError('renderTop',e); }
+  try{ if(!UI.animating) applySnap(snapOf(S.disp)); }catch(e){ showError('renderDisp',e); }
+  try{ renderPickable(); }catch(e){ showError('renderPick',e); }
+  try{ renderPlayers(); }catch(e){ showError('renderPlayers',e); }
+  try{ renderStacks(); }catch(e){ showError('renderStacks',e); }
+  try{ renderLab(); }catch(e){ showError('renderLab',e); }
+  try{ renderActions(); }catch(e){ showError('renderActions',e); }
+  try{ renderPend(); }catch(e){ showError('renderPend',e); }
+}
+function renderTop(){
+  var who=(S.phase==='draft')?S.draft.i:S.cur, p=S.players[who];
+  $('turn-av').textContent=p.av;
+  $('turn-nm').textContent=p.name+(p.isBot?' 🤖':'')+(p.dc?' (หลุด)':'');
+  var ph='';
+  if(S.phase==='draft') ph='เลือกสูตรยาเริ่มต้น '+(S.draft.n+1)+'/2';
+  else if(S.phase==='over') ph='จบเกม';
+  else if(S.pend) ph=pendText();
+  else if(!S.turn.took) ph='หยิบวัตถุดิบ 1 ลูก';
+  else ph='วางวัตถุดิบ / ดื่มยา / จบเทิร์น';
+  $('turn-ph').textContent=ph;
+  var tc=(S.disp&&S.disp.tank&&S.disp.tank.length)?S.disp.tank.length:(S.tankCount||0);
+  $('tank-count').textContent=tc;
+  $('skill-left').textContent=S.skillCountdown;
+  $('skill-pool').textContent=S.skillPool;
+  $('help-left').textContent=S.helpLeft;
+  $('room-code-live').textContent=S.room||'-----';
+}
+function renderPickable(){
+  var canTake=iCanAct()&&S.phase==='play'&&((!S.turn.took&&!S.pend)||(S.pend&&isMarblePend(S.pend.k)));
+  var abyss=S.pend&&S.pend.k==='abyss';
+  for(var id in MEL){
+    var e=MEL[id], idx=parseInt(e.dataset.idx,10);
+    var ok=canTake&&idx<LOCK_IDX&&(!abyss||idx===0);
+    e.classList.toggle('pick',!!ok);
+    e.classList.toggle('hl',!!(ok&&S.pend));
+  }
+}
+function isMarblePend(k){ return k==='marbleOne'||k==='adjDiff'||k==='run'||k==='abyss'||k==='discard'; }
+function renderPlayers(){
+  for(var i=0;i<S.n;i++){
+    var p=S.players[i],c=pcEls[i];
+    c.classList.toggle('cur',i===((S.phase==='draft')?S.draft.i:S.cur));
+    c.classList.toggle('dc',!!p.dc);
+    c.querySelector('.avx').textContent=p.av;
+    c.querySelector('.nm').textContent=(i===S.first?'👑':'')+p.name+(p.isBot?'🤖':'');
+    c.querySelector('.sc').textContent=scoreOf(p);
+    var bt='';
+    for(var b=0;b<2;b++){
+      var t=p.brew[b];
+      if(t){ var f=0; for(var q=0;q<t.fill.length;q++) if(t.fill[q]) f++;
+        bt+=POTIONS[t.k].icon+f+'/'+t.fill.length+' '; }
+    }
+    c.querySelector('.l2').textContent='🧪'+p.done.length+' ⭐'+p.skill+' 🆘'+p.help+' '+bt;
+  }
+}
+function renderStacks(){
+  var pend=S.pend&&S.pend.k==='chooseTile'&&iCanAct();
+  for(var s=0;s<5;s++){
+    var e=stkEls[s],st=S.stacks[s]||[];
+    var k=st.length?st[st.length-1]:null;
+    e.querySelector('.ic').textContent=(k!=null)?POTIONS[k].icon:'∅';
+    e.querySelector('.nmx').textContent=(k!=null)?POTIONS[k].th:'ว่าง';
+    e.querySelector('.vl').textContent=(k!=null?POTIONS[k].val+'★ ':'')+'×'+st.length;
+    e.classList.toggle('empty',st.length===0);
+    e.classList.toggle('sel',!!(pend&&st.length>0));
+  }
+}
+function renderLab(){
+  var p=viewPlayer(); if(!p) return;
+  var mine=(UI.mode==='online')||(p===S.players[S.cur]);
+  $('lab-owner').textContent='โต๊ะ '+p.av+p.name+(p.pool.length>POOL_MAX?' ⚠️คลังเกิน':'');
+  var slots=$('pool').children, show=Math.max(POOL_MAX,p.pool.length),i;
+  for(i=0;i<slots.length;i++){
+    var sl=slots[i];
+    sl.classList.toggle('on',i<show);
+    sl.classList.toggle('over',i>=POOL_MAX);
+    clear(sl);
+    if(i<p.pool.length){
+      var m=el('i','pm c'+p.pool[i].c+(p.pool[i].w?' wild':''));
+      if(UI.sel===i) m.classList.add('sel');
+      m.dataset.mi=i; sl.appendChild(m);
+    }
+  }
+  for(var b=0;b<2;b++){
+    var card=bwEls[b],tile=p.brew[b],ss=card.querySelectorAll('.slot');
+    if(!tile){
+      card.classList.add('empty');
+      card.querySelector('.ic').textContent='⬜';
+      card.querySelector('.nm').textContent='เตาว่าง';
+      card.querySelector('.vl').textContent='-';
+      for(i=0;i<ss.length;i++) ss[i].className='slot';
+      continue;
+    }
+    var P=POTIONS[tile.k];
+    card.classList.remove('empty');
+    card.querySelector('.ic').textContent=P.icon;
+    card.querySelector('.nm').textContent=P.th;
+    card.querySelector('.vl').textContent=P.val+'★';
+    for(i=0;i<ss.length;i++){
+      if(i>=P.recipe.length){ ss[i].className='slot'; continue; }
+      var cls='slot on s'+P.recipe[i];
+      if(tile.fill[i]) cls+=' fill';
+      else if(UI.sel>=0&&iCanAct()&&mine&&canPlace(p,UI.sel,b,i)) cls+=' can';
+      ss[i].className=cls; ss[i].dataset.b=b; ss[i].dataset.s=i;
+    }
+  }
+  var shelf=$('shelf'); clear(shelf);
+  if(!p.done.length){ shelf.appendChild(el('div','emptyhint','ยังไม่มียาที่ปรุงเสร็จ — เติมช่องให้ครบเพื่อเก็บคะแนน')); }
+  for(var d=0;d<p.done.length;d++){
+    var dd=p.done[d],PP=POTIONS[dd.k];
+    var chip=el('button','pot'+(dd.drunk?' drunk':(iCanAct()&&mine?' ready':'')));
+    chip.appendChild(el('span',null,PP.icon));
+    chip.appendChild(el('span',null,PP.th));
+    chip.appendChild(el('span','v',PP.val+'★'));
+    if(dd.drunk) chip.appendChild(el('span',null,'✓'));
+    chip.dataset.di=d; shelf.appendChild(chip);
+  }
+}
+function renderActions(){
+  var act=iCanAct()&&S.phase==='play', p=S.players[S.cur];
+  $('act-help').disabled=!(act&&!S.turn.helped&&S.helpLeft>0&&!S.pend);
+  $('act-auto').disabled=!(act&&!S.pend&&p.pool.length>0);
+  $('act-end').disabled=!(act&&!S.pend);
+  var showCancel=!!(S.pend&&act&&S.pend.k!=='chooseTile'&&S.pend.k!=='draft');
+  $('act-cancel').style.display=showCancel?'block':'none';
+}
+function pendText(){
+  var pd=S.pend; if(!pd) return '';
+  if(pd.k==='marbleOne') return (pd.src==='help'?'🆘 ':'📘 ')+'เลือกวัตถุดิบ 1 ลูก (ไม่ระเบิด)';
+  if(pd.k==='adjDiff') return '🧲 เลือก 2 ลูกติดกัน "คนละสี" ('+(pd.step===1?'ลูกที่ 1':'ลูกที่ 2')+')';
+  if(pd.k==='run') return '🍯 แตะกลุ่มสีเดียวกันที่ติดกัน ≥2 ลูก';
+  if(pd.k==='abyss') return '🌀 แตะลูกล่างสุดของราง — สีละ 1 ลูก (ได้แล้ว '+pd.count+')';
+  if(pd.k==='discard') return '🌋 แตะลูกที่จะทิ้ง — ทิ้งสีเดียวกันในรางนั้น ≤5 ลูก';
+  if(pd.k==='steal') return '💘 เลือกวัตถุดิบบนสูตรยาของคู่แข่ง';
+  if(pd.k==='chooseTile') return '📋 เลือกสูตรยาใหม่จากกองด้านล่างเครื่องจ่าย';
+  if(pd.k==='draft') return '📋 เลือกสูตรยาเริ่มต้น';
+  return '';
+}
+function renderPend(){
+  var b=$('bannr');
+  if(S.pend&&iCanAct()){ b.classList.add('on'); $('bannr-t').textContent=pendText(); }
+  else b.classList.remove('on');
+  $('pend-done').style.display=(S.pend&&S.pend.k==='abyss'&&iCanAct())?'block':'none';
+  var need=S.pend&&iCanAct()&&(S.pend.k==='draft'||S.pend.k==='steal');
+  if(need) buildPendModal();
+  else if(!UI.localModal) closeModal();
+}
+function recipeText(P){
+  var m={},s='';
+  P.recipe.forEach(function(c){ m[c]=(m[c]||0)+1; });
+  CLIST.forEach(function(c){ if(m[c]) s+=m[c]+'×'+CSHORT[c]+' '; });
+  return s;
+}
+function buildPendModal(){
+  var pd=S.pend,opts=[],title='',desc='',cancelable=true,k,i;
+  if(pd.k==='draft'){
+    var dp=S.players[S.draft.i];
+    title='📋 '+dp.name+' เลือกสูตรยาเริ่มต้น ('+(S.draft.n+1)+'/2)';
+    desc='เลือกสูตรที่จะเริ่มปรุงบนเตา'; cancelable=false;
+    for(k=0;k<8;k++){
+      var P=POTIONS[k],cnt=S.typeStacks[k].length;
+      opts.push({icon:P.icon,name:P.th,sub:P.val+'★ • '+recipeText(P),dis:cnt===0,act:{t:'draftPick',k:k}});
+    }
+  } else if(pd.k==='steal'){
+    title='💘 ขโมยวัตถุดิบ'; desc='เลือกวัตถุดิบที่วางบนสูตรยาของผู้เล่นอื่น';
+    for(i=0;i<S.n;i++){
+      if(i===S.cur) continue;
+      var vp=S.players[i];
+      for(var b=0;b<2;b++){
+        var t=vp.brew[b]; if(!t) continue;
+        for(var s=0;s<t.fill.length;s++){
+          if(t.fill[s]) opts.push({icon:POTIONS[t.k].icon,dot:t.fill[s],name:vp.name,
+            sub:CNAME[t.fill[s]]+' • '+POTIONS[t.k].th,act:{t:'target',kind:'steal',p:i,b:b,s:s}});
+        }
+      }
+    }
+    if(!opts.length) desc='ไม่มีเป้าหมาย — กดยกเลิก';
+  }
+  openModal(title,desc,opts,cancelable);
+}
+function openModal(title,desc,opts,cancelable,cb){
+  var m=$('modal-pick');
+  $('mp-title').textContent=title;
+  $('mp-desc').textContent=desc||'';
+  var box=$('mp-opts'); clear(box);
+  opts.forEach(function(o){
+    var b=el('button','opt');
+    if(o.dis||o.disabled) b.disabled=true;
+    var ic=el('div','oi');
+    if(o.dot) ic.appendChild(el('span','dot c'+o.dot));
+    if(o.icon) ic.appendChild(document.createTextNode(o.icon));
+    b.appendChild(ic);
+    b.appendChild(el('div','on2',o.name));
+    if(o.sub) b.appendChild(el('div','tiny muted',o.sub));
+    b.onclick=function(){ sfx('tap'); if(cb){ UI.localModal=false; closeModal(); cb(o); } else dispatch(o.act); };
+    box.appendChild(b);
+  });
+  $('mp-cancel').style.display=(cancelable===false)?'none':'block';
+  UI.localModal=!!cb;
+  m.classList.add('on');
+}
+function closeModal(){ var m=$('modal-pick'); if(m) m.classList.remove('on'); UI.localModal=false; }
+function react(i,emo){
+  try{
+    var c=pcEls[i]; if(!c) return;
+    var r=c.querySelector('.react'); r.textContent=emo;
+    r.classList.remove('on'); void r.offsetWidth; r.classList.add('on');
+  }catch(e){}
+}
+
+/* ---------------- BOT ---------------- */
+function needMap(p){
+  var n={R:0,Y:0,B:0,K:0};
+  for(var b=0;b<2;b++){
+    var t=p.brew[b]; if(!t) continue;
+    var rc=POTIONS[t.k].recipe;
+    for(var i=0;i<rc.length;i++) if(!t.fill[i]) n[rc[i]]++;
+  }
+  return n;
+}
+function simValue(p,cols){
+  var avail={R:0,Y:0,B:0,K:0},i,c;
+  for(i=0;i<p.pool.length;i++) avail[p.pool[i].c]++;
+  for(i=0;i<cols.length;i++) avail[cols[i]]++;
+  var need=[];
+  for(var b=0;b<2;b++){
+    var t=p.brew[b]; if(!t) continue;
+    var m={R:0,Y:0,B:0,K:0},tot=0,rc=POTIONS[t.k].recipe;
+    for(i=0;i<rc.length;i++) if(!t.fill[i]){ m[rc[i]]++; tot++; }
+    need.push({m:m,tot:tot,val:POTIONS[t.k].val,k:t.k});
+  }
+  need.sort(function(a,b2){ return a.tot-b2.tot; });
+  var sc=0,used=0;
+  for(i=0;i<need.length;i++){
+    var nd=need[i],ok=true;
+    for(c in nd.m) if(avail[c]<nd.m[c]) ok=false;
+    if(ok){
+      for(c in nd.m){ avail[c]-=nd.m[c]; used+=nd.m[c]; }
+      sc+=nd.val*2.2+6;
+      var same=0;
+      for(var q=0;q<p.done.length;q++) if(p.done[q].k===nd.k) same++;
+      if(same===2&&!p.skillSame[nd.k]) sc+=7;
+    } else {
+      for(c in nd.m){ var tk=Math.min(avail[c],nd.m[c]); avail[c]-=tk; used+=tk; }
+    }
+  }
+  sc+=used*2.5;
+  var left=0; for(c in avail) left+=avail[c];
+  sc+=Math.min(left,POOL_MAX)*.3-Math.max(0,left-POOL_MAX)*.35;
+  return sc;
+}
+function simDisp(){
+  return {tracks:S.disp.tracks.map(function(t){ return t.map(function(m){ return {id:m.id,c:m.c}; }); }),
+          tank:shuffle(S.disp.tank.map(function(m){ return {id:m.id,c:m.c}; }))};
+}
+function botBestPick(p,level){
+  var cands=[],t,i;
+  for(t=0;t<5;t++) for(i=0;i<Math.min(S.disp.tracks[t].length,LOCK_IDX);i++) cands.push({t:t,i:i});
+  if(!cands.length) return null;
+  if(level==='easy') return cands[Math.floor(Math.random()*cands.length)];
+  var best=null;
+  for(var q=0;q<cands.length;q++){
+    var D2=simDisp();
+    var r=removeIdx(D2,cands[q].t,[cands[q].i],true);
+    var cols=r.got.map(function(m){ return m.c; });
+    var v=simValue(p,cols)+r.got.length*.45;
+    if(level==='hard'){
+      var opp=S.players[(p.i+1)%S.n],ob=0;
+      for(var z=0;z<cands.length;z+=4){
+        var D3={tracks:D2.tracks.map(function(x){ return x.map(function(m){ return {id:m.id,c:m.c}; }); }),tank:D2.tank.slice()};
+        if(cands[z].i>=D3.tracks[cands[z].t].length) continue;
+        var r2=removeIdx(D3,cands[z].t,[cands[z].i],true);
+        var ov=simValue(opp,r2.got.map(function(m){ return m.c; }));
+        if(ov>ob) ob=ov;
+      }
+      v-=ob*.2;
+    }
+    v+=Math.random()*.35;
+    if(!best||v>best.v) best={t:cands[q].t,i:cands[q].i,v:v};
+  }
+  return best;
+}
+function findColor(c,maxIdx){
+  var lim=(maxIdx==null)?LOCK_IDX:maxIdx;
+  for(var t=0;t<5;t++) for(var i=0;i<Math.min(S.disp.tracks[t].length,lim);i++)
+    if(S.disp.tracks[t][i].c===c) return {t:t,i:i};
+  return null;
+}
+async function botAct(who){
+  try{
+    if(!S||S.phase==='over') return;
+    if(S.phase==='draft'){
+      if(S.draft.i!==who) return;
+      var av=[],k;
+      for(k=0;k<8;k++) if(S.typeStacks[k].length) av.push(k);
+      var pk=av[Math.floor(Math.random()*av.length)];
+      await applyAction({t:'draftPick',k:pk},who); return;
+    }
+    if(S.cur!==who) return;
+    var p=S.players[who], lvl=p.isBot?p.level:'normal';
+    await sleep(320);
+    if(!S.turn.took){
+      var pick=botBestPick(p,lvl);
+      if(pick) await applyAction({t:'take',track:pick.t,idx:pick.i},who);
+      else S.turn.took=true;
+    }
+    await sleep(240);
+    doAutoPlace(p); render(); broadcast();
+    if(lvl!=='easy'){ await botPotions(p); doAutoPlace(p); render(); broadcast(); }
+    if(lvl!=='easy'&&!S.turn.helped&&S.helpLeft>0&&!S.pend){
+      var want=null;
+      for(var b=0;b<2;b++){
+        var t=p.brew[b]; if(!t) continue;
+        var miss=[],rc=POTIONS[t.k].recipe;
+        for(var i=0;i<rc.length;i++) if(!t.fill[i]) miss.push(rc[i]);
+        if(miss.length===1&&POTIONS[t.k].val>=4) want=miss[0];
+      }
+      if(want){
+        var loc=findColor(want);
+        if(loc){
+          await applyAction({t:'help'},who);
+          await applyAction({t:'target',kind:'marble',track:loc.t,idx:loc.i},who);
+          doAutoPlace(p);
+        }
+      }
+    }
+    doAutoPlace(p); render(); broadcast();
+    await sleep(280);
+    if(S.pend&&S.pend.k!=='chooseTile') await applyAction({t:'pendDone'},who);
+    if(S.pend&&S.pend.k!=='chooseTile') S.pend=null;
+    await applyAction({t:'end'},who);
+    var guard=0;
+    while(S&&S.pend&&S.pend.k==='chooseTile'&&S.cur===who&&guard++<6){
+      var bs=-1,bv=-99;
+      for(var s=0;s<5;s++){
+        if(!S.stacks[s].length) continue;
+        var kk=S.stacks[s][S.stacks[s].length-1];
+        var v=POTIONS[kk].val-POTIONS[kk].recipe.length*.7+Math.random();
+        var same=0; for(var d=0;d<p.done.length;d++) if(p.done[d].k===kk) same++;
+        if(same===2&&!p.skillSame[kk]) v+=4;
+        var kinds={},nk=0;
+        for(d=0;d<p.done.length;d++) kinds[p.done[d].k]=1;
+        for(var x in kinds) nk++;
+        if(!kinds[kk]&&nk===4&&!p.skillDiff) v+=4;
+        if(v>bv){ bv=v; bs=s; }
+      }
+      if(bs<0) break;
+      await applyAction({t:'target',kind:'stack',si:bs},who);
+    }
+  }catch(e){
+    showError('bot',e);
+    try{
+      if(S){ S.pend=null; UI.animating=false;
+        if(S.cur===who&&S.phase==='play'){ S.turn.took=true; doEndTurn(); }
+        render(); broadcast(); }
+    }catch(x){}
+  }
+}
+async function botPotions(p){
+  var guard=0;
+  for(var d=0;d<p.done.length&&guard<3;d++){
+    if(p.done[d].drunk||S.pend) continue;
+    var k=p.done[d].k, nd=needMap(p), c, plan=null;
+    if(k===0){
+      for(c in nd){ if(nd[c]>0){ var l=findColor(c); if(l){ plan=[{kind:'marble',track:l.t,idx:l.i}]; break; } } }
+    } else if(k===3){
+      var bad=0;
+      for(var q=0;q<p.pool.length;q++) if(nd[p.pool[q].c]===0) bad++;
+      if(bad>0&&p.pool.length>0) plan=[];
+    } else if(k===1){
+      for(var pi=0;pi<S.n&&!plan;pi++){
+        if(pi===p.i) continue;
+        var vp=S.players[pi];
+        for(var b=0;b<2&&!plan;b++){
+          var t=vp.brew[b]; if(!t) continue;
+          for(var s=0;s<t.fill.length;s++) if(t.fill[s]&&nd[t.fill[s]]>0){ plan=[{kind:'steal',p:pi,b:b,s:s}]; break; }
+        }
+      }
+    } else if(k===6){
+      for(var t2=0;t2<5&&!plan;t2++){
+        var tr=S.disp.tracks[t2];
+        for(var i=0;i<Math.min(tr.length,LOCK_IDX)-1;i++){
+          if(tr[i].c===tr[i+1].c&&nd[tr[i].c]>=1){ plan=[{kind:'marble',track:t2,idx:i}]; break; }
+        }
+      }
+    } else if(k===2){
+      for(var t3=0;t3<5&&!plan;t3++){
+        var tr3=S.disp.tracks[t3];
+        for(var j=0;j<Math.min(tr3.length,LOCK_IDX)-1;j++){
+          if(tr3[j].c!==tr3[j+1].c&&nd[tr3[j].c]>0&&nd[tr3[j+1].c]>0){
+            plan=[{kind:'marble',track:t3,idx:j},{kind:'marble',track:t3,idx:j+1}]; break; }
+        }
+      }
+    } else if(k===4){
+      var picks=[],seen={};
+      for(var t4=0;t4<5;t4++){
+        var tr4=S.disp.tracks[t4];
+        if(tr4.length&&nd[tr4[0].c]>0&&!seen[tr4[0].c]){ seen[tr4[0].c]=1; picks.push({kind:'marble',track:t4,idx:0}); }
+      }
+      if(picks.length>=1) plan=picks;
+    }
+    if(plan){
+      guard++;
+      await applyAction({t:'drink',di:d},p.i);
+      await sleep(220);
+      for(var z=0;z<plan.length;z++){
+        if(!S.pend) break;
+        var a={t:'target'}; for(var kk in plan[z]) a[kk]=plan[z][kk];
+        await applyAction(a,p.i); await sleep(180);
+      }
+      if(S.pend) await applyAction({t:'pendDone'},p.i);
+      if(S.pend) S.pend=null;
+      doAutoPlace(p); render(); broadcast();
+    }
+  }
+}
+
+/* ---------------- NETWORK ---------------- */
+var NET={peer:null,conns:[],host:false,code:'',name:'',myConn:null,seats:[]};
+function makeCode(){ var A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s=''; for(var i=0;i<5;i++) s+=A.charAt(Math.floor(Math.random()*A.length)); return s; }
+function peerId(c){ return 'potexp-th-v2-'+c; }
+function netStatus(m){ var e=$('o-status'); if(e) e.textContent=m; }
+function renderLobby(){
+  try{
+    var box=$('o-players'); if(!box) return; clear(box);
+    for(var i=0;i<NET.seats.length;i++){
+      var s=NET.seats[i],d=el('div','row c');
+      d.style.cssText='justify-content:space-between;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:10px;padding:7px 11px';
+      d.appendChild(el('span',null,AVATARS[i]+' '+s.name+(i===0?' (เจ้าภาพ)':'')));
+      d.appendChild(el('span','tiny',s.connected?'🟢 พร้อม':'🔴 หลุด'));
+      box.appendChild(d);
+    }
+    $('o-start').style.display=NET.host?'block':'none';
+    $('o-start').disabled=NET.seats.length<2;
+  }catch(e){ showError('lobby',e); }
+}
+function netSend(o){ try{ if(NET.myConn&&NET.myConn.open) NET.myConn.send(o); }catch(e){ showError('netSend',e); } }
+function broadcast(ev){
+  try{
+    if(UI.mode!=='online'||!NET.host||!S) return;
+    S.tankCount=S.disp.tank.length;
+    var o=clone(S); o.disp.tank=[];
+    var pack={t:'sync',s:o,ev:ev||null,logs:LOGS.slice(-25)};
+    for(var i=0;i<NET.conns.length;i++) if(NET.conns[i]&&NET.conns[i].open) NET.conns[i].send(pack);
+  }catch(e){ showError('broadcast',e); }
+}
+function hostRoom(name){
+  if(window.__PEERFAIL||typeof Peer==='undefined'){ netStatus('❌ โหลดระบบ P2P ไม่ได้ (เล่นออฟไลน์ได้ปกติ)'); return; }
+  NET.host=true; UI.isHost=true; UI.mode='online'; UI.myIdx=0;
+  NET.code=makeCode(); NET.name=name;
+  NET.seats=[{name:name,connected:true,id:null}];
+  $('o-lobby').style.display='flex'; $('o-roomcode').textContent=NET.code;
+  netStatus('กำลังเปิดห้อง…');
+  try{ NET.peer=new Peer(peerId(NET.code),{debug:0}); }catch(e){ showError('peer',e); return; }
+  NET.peer.on('open',function(){ netStatus('✅ ห้องพร้อม! บอกรหัส '+NET.code+' ให้เพื่อน'); renderLobby(); });
+  NET.peer.on('error',function(err){
+    netStatus('⚠️ '+((err&&err.type)?err.type:'error'));
+    if(err&&err.type==='unavailable-id'){
+      try{ NET.peer.destroy(); }catch(x){}
+      setTimeout(function(){ hostRoom(name); },400);
+    }
+  });
+  NET.peer.on('connection',function(conn){
+    conn.on('open',function(){
+      NET.conns.push(conn);
+      conn.on('data',function(m){ onHostData(conn,m); });
+      conn.on('close',function(){ onSeatDrop(conn); });
+      conn.on('error',function(){ onSeatDrop(conn); });
+    });
+  });
+  renderLobby();
+}
+function onHostData(conn,msg){
+  try{
+    if(!msg) return;
+    if(msg.t==='hello'){
+      var idx=-1,i;
+      for(i=0;i<NET.seats.length;i++) if(NET.seats[i].name===msg.name) idx=i;
+      if(idx<0){
+        if(S){ conn.send({t:'deny',why:'เกมเริ่มแล้ว — กลับเข้าได้เฉพาะชื่อเดิม'}); return; }
+        if(NET.seats.length>=4){ conn.send({t:'deny',why:'ห้องเต็ม (4 คน)'}); return; }
+        NET.seats.push({name:msg.name,connected:true,id:conn.peer});
+        idx=NET.seats.length-1;
+      }
+      NET.seats[idx].connected=true; NET.seats[idx].id=conn.peer; conn.__seat=idx;
+      conn.send({t:'welcome',idx:idx,code:NET.code,seats:NET.seats});
+      if(S&&S.players[idx]){ S.players[idx].dc=false; S.players[idx].isBot=false; log('🔌 '+msg.name+' กลับเข้าเกม'); broadcast(); }
+      lobbyBroadcast(); renderLobby();
+    } else if(msg.t==='action'){
+      if(conn.__seat==null) return;
+      applyAction(msg.a,conn.__seat);
+    }
+  }catch(e){ showError('hostData',e); }
+}
+function lobbyBroadcast(){ for(var i=0;i<NET.conns.length;i++) if(NET.conns[i]&&NET.conns[i].open) NET.conns[i].send({t:'seats',seats:NET.seats}); }
+function onSeatDrop(conn){
+  try{
+    var i=conn.__seat;
+    if(i!=null&&NET.seats[i]) NET.seats[i].connected=false;
+    NET.conns=NET.conns.filter(function(c){ return c!==conn; });
+    if(S&&i!=null&&S.players[i]){
+      S.players[i].dc=true;
+      log('🔌 '+S.players[i].name+' หลุด — ระบบเล่นแทนชั่วคราว');
+      render(); broadcast(); autoPilot();
+    }
+    lobbyBroadcast(); renderLobby();
+  }catch(e){ showError('seatDrop',e); }
+}
+function joinRoom(code,name){
+  if(window.__PEERFAIL||typeof Peer==='undefined'){ netStatus('❌ โหลดระบบ P2P ไม่ได้'); return; }
+  NET.host=false; UI.isHost=false; UI.mode='online'; NET.code=code; NET.name=name;
+  $('o-lobby').style.display='flex'; $('o-roomcode').textContent=code;
+  netStatus('กำลังเชื่อมต่อห้อง '+code+' …');
+  try{ if(NET.peer) NET.peer.destroy(); }catch(x){}
+  try{ NET.peer=new Peer({debug:0}); }catch(e){ showError('peer',e); return; }
+  NET.peer.on('open',function(){
+    var conn=NET.peer.connect(peerId(code),{reliable:true});
+    NET.myConn=conn;
+    conn.on('open',function(){ netStatus('เชื่อมต่อแล้ว — กำลังเข้าห้อง…'); conn.send({t:'hello',name:name}); });
+    conn.on('data',function(m){ onClientData(m); });
+    conn.on('close',function(){ netStatus('🔴 หลุดจากเจ้าภาพ — กด "เข้าร่วม" ด้วยชื่อเดิมเพื่อกลับเข้าเกม'); });
+    conn.on('error',function(){ netStatus('⚠️ เชื่อมต่อผิดพลาด'); });
+  });
+  NET.peer.on('error',function(err){ netStatus('⚠️ '+((err&&err.type)?err.type:'error')+' — ตรวจรหัสห้องอีกครั้ง'); });
+}
+async function onClientData(msg){
+  try{
+    if(!msg) return;
+    if(msg.t==='welcome'){
+      UI.myIdx=msg.idx; NET.seats=msg.seats||[];
+      netStatus('✅ เข้าห้องแล้ว — คุณคือผู้เล่นคนที่ '+(msg.idx+1));
+      renderLobby();
+    } else if(msg.t==='seats'){ NET.seats=msg.seats||[]; renderLobby(); }
+    else if(msg.t==='deny'){ netStatus('❌ '+msg.why); }
+    else if(msg.t==='sync'){
+      var wasIn=$('sc-game').classList.contains('on');
+      var st=msg.s; st.disp.tank=[];
+      if(msg.logs) LOGS=msg.logs.slice();
+      if(msg.ev&&S&&wasIn){ S=st; render(); await playEvents(msg.ev); }
+      else S=st;
+      UI.mode='online';
+      if(!wasIn&&S.phase!=='over'){
+        showScreen('sc-game');
+        $('players').className='players p'+S.n;
+        for(var i=0;i<4;i++) pcEls[i].classList.toggle('on',i<S.n);
+        $('room-chip').classList.add('on');
+        MEL={};
+        for(i=0;i<trackEls.length;i++){ var tr=trackEls[i],ll=tr.querySelector('.lockline'); clear(tr); if(ll) tr.appendChild(ll); }
+        fitBoard(); applySnap(snapOf(S.disp));
+      }
+      if(LOGS.length) { var l=$('logline'); if(l) l.textContent=LOGS[LOGS.length-1]; }
+      if(S.phase==='over') showResult('');
+      render();
+    }
+  }catch(e){ showError('clientData',e); }
+}
+
+/* ---------------- SCREENS / BIND ---------------- */
+function showScreen(id){
+  var a=document.querySelectorAll('.screen');
+  for(var i=0;i<a.length;i++) a[i].classList.toggle('on',a[i].id===id);
+  if(id==='sc-game') setTimeout(fitBoard,60);
+}
+function bind(){
+  var i;
+  trackEls=[]; var trs=document.querySelectorAll('#tracks .track');
+  for(i=0;i<trs.length;i++) trackEls.push(trs[i]);
+  pcEls=[$('pc0'),$('pc1'),$('pc2'),$('pc3')];
+  stkEls=[]; var sks=document.querySelectorAll('#stacks .stk');
+  for(i=0;i<sks.length;i++) stkEls.push(sks[i]);
+  bwEls=[$('bw0'),$('bw1')];
+
+  document.body.addEventListener('pointerdown',function(){ auInit(); if(AU.music&&!AU.started) musicStart(); });
+
+  $('m-solo').onclick=function(){ sfx('tap'); UI.mode='solo'; $('s-diffwrap').style.display='block'; showScreen('sc-setup'); };
+  $('m-local').onclick=function(){ sfx('tap'); UI.mode='local'; $('s-diffwrap').style.display='none'; showScreen('sc-setup'); };
+  $('m-online').onclick=function(){ sfx('tap'); UI.mode='online'; showScreen('sc-online'); };
+  $('m-rules').onclick=$('g-rules').onclick=function(){ sfx('tap'); $('modal-rules').classList.add('on'); };
+  $('rules-close').onclick=function(){ sfx('tap'); $('modal-rules').classList.remove('on'); };
+  $('g-log').onclick=function(){ sfx('tap'); openLog(); };
+  $('log-close').onclick=function(){ sfx('tap'); $('modal-log').classList.remove('on'); };
+  $('m-music').onclick=$('g-music').onclick=function(){ musicToggle(!AU.music); refreshAudioBtns(); sfx('tap'); };
+  $('m-sfx').onclick=$('g-sfx').onclick=function(){ AU.sfx=!AU.sfx; refreshAudioBtns(); auInit(); sfx('tap'); };
+  $('errclose').onclick=function(){ $('errpanel').classList.remove('on'); };
+  $('errreload').onclick=function(){ location.reload(); };
+
+  function seg(id){
+    $(id).addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      var all=$(id).querySelectorAll('button');
+      for(var i=0;i<all.length;i++) all[i].classList.remove('act');
+      b.classList.add('act'); sfx('tap');
+    });
+  }
+  seg('s-count'); seg('s-diff');
+  $('s-back').onclick=function(){ sfx('tap'); showScreen('sc-menu'); };
+  $('s-start').onclick=function(){
+    sfx('tap'); auInit(); if(AU.music) musicStart();
+    var cb=$('s-count').querySelector('.act'), db=$('s-diff').querySelector('.act');
+    var n=parseInt(cb?cb.dataset.v:'2',10), lv=db?db.dataset.v:'normal';
+    var nm=($('s-name').value||'นักเรียน').substring(0,10);
+    var pls=[];
+    if(UI.mode==='solo'){
+      pls.push({name:nm,isBot:false});
+      var bn=['ศ.ฟิซเซิล','แม่มดมินท์','เจ้าหนูคาลด์รอน'];
+      for(var i=1;i<n;i++) pls.push({name:bn[i-1],isBot:true,level:lv});
+    } else {
+      for(var j=0;j<n;j++) pls.push({name:(j===0?nm:'ผู้เล่น '+(j+1)),isBot:false});
+    }
+    startGame({mode:UI.mode,players:pls});
+  };
+
+  $('o-create').onclick=function(){ sfx('tap'); auInit(); if(AU.music) musicStart(); hostRoom(($('o-name').value||'เจ้าภาพ').substring(0,10)); };
+  $('o-join').onclick=function(){
+    sfx('tap'); auInit(); if(AU.music) musicStart();
+    var c=($('o-code').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,5);
+    if(c.length!==5){ netStatus('⚠️ กรอกรหัสห้อง 5 ตัวอักษร'); return; }
+    joinRoom(c,($('o-name').value||'ผู้เล่น').substring(0,10));
+  };
+  $('o-copy').onclick=function(){
+    var link=location.origin+location.pathname+'?room='+NET.code;
+    try{ navigator.clipboard.writeText(link); netStatus('🔗 คัดลอกลิงก์แล้ว!'); }
+    catch(e){ netStatus(link); }
+  };
+  $('o-start').onclick=function(){
+    if(!NET.host||NET.seats.length<2) return;
+    sfx('tap');
+    var pls=NET.seats.map(function(s){ return {name:s.name,isBot:false}; });
+    UI.mode='online'; UI.isHost=true; UI.myIdx=0;
+    startGame({mode:'online',players:pls,room:NET.code});
+  };
+  $('o-back').onclick=function(){ sfx('tap'); showScreen('sc-menu'); };
+
+  $('g-menu').onclick=function(){
+    sfx('tap');
+    openModal('☰ เมนู','เลือกการทำงาน',[
+      {icon:'📖',name:'วิธีเล่น',sub:'เปิดกติกา'},
+      {icon:'📜',name:'บันทึกเหตุการณ์',sub:'ดูย้อนหลัง'},
+      {icon:'🔁',name:'เริ่มเกมใหม่',sub:'ตั้งค่าเดิม'},
+      {icon:'🏠',name:'ออกไปเมนูหลัก',sub:''}
+    ],true,function(o){
+      if(o.name==='วิธีเล่น') $('modal-rules').classList.add('on');
+      else if(o.name==='บันทึกเหตุการณ์') openLog();
+      else if(o.name==='เริ่มเกมใหม่'){ if(UI.lastCfg&&UI.mode!=='online') startGame(UI.lastCfg); }
+      else if(o.name==='ออกไปเมนูหลัก') showScreen('sc-menu');
+    });
+  };
+  $('g-allpot').onclick=function(){
+    if(!S) return;
+    var p=viewPlayer(), opts=[];
+    for(var d=0;d<p.done.length;d++){
+      var P=POTIONS[p.done[d].k];
+      opts.push({icon:P.icon,name:P.th+(p.done[d].drunk?' ✓':''),sub:P.val+'★ • '+P.pw});
+    }
+    var cnt={},k,txt='';
+    for(d=0;d<p.done.length;d++) cnt[p.done[d].k]=(cnt[p.done[d].k]||0)+1;
+    var kinds=0; for(k in cnt) kinds++;
+    txt='ยา '+p.done.length+' ขวด • '+kinds+' ชนิด • คะแนนยา '+potionPts(p)+' • ⭐'+p.skill+' • 🆘'+p.help+' → รวม '+scoreOf(p);
+    sfx('tap');
+    openModal('🗄️ ยาของ '+p.name,txt,opts,true,function(){});
+  };
+  $('mp-cancel').onclick=function(){ sfx('tap'); if(UI.localModal){ closeModal(); return; } closeModal(); dispatch({t:'cancel'}); };
+  $('pend-done').onclick=function(){ sfx('tap'); dispatch({t:'pendDone'}); };
+
+  $('tracks').addEventListener('click',function(ev){
+    try{
+      if(!S||!iCanAct()) return;
+      var m=ev.target.closest('.marble'); if(!m) return;
+      var t=parseInt(m.dataset.track,10), i=parseInt(m.dataset.idx,10);
+      if(i>=LOCK_IDX){ log('⚠️ ลูกที่ 9 หยิบไม่ได้ตามกติกา'); sfx('bad'); return; }
+      if(S.pend&&isMarblePend(S.pend.k)) dispatch({t:'target',kind:'marble',track:t,idx:i});
+      else if(S.pend) log('⚠️ ทำสิ่งที่ค้างให้เสร็จก่อน');
+      else dispatch({t:'take',track:t,idx:i});
+    }catch(e){ showError('clickTrack',e); }
+  });
+  $('stacks').addEventListener('click',function(ev){
+    if(!S) return;
+    var s=ev.target.closest('.stk'); if(!s) return;
+    var si=parseInt(s.dataset.s,10);
+    if(iCanAct()&&S.pend&&S.pend.k==='chooseTile'){ sfx('tap'); dispatch({t:'target',kind:'stack',si:si}); return; }
+    var st=S.stacks[si];
+    if(st&&st.length){ var P=POTIONS[st[st.length-1]]; log(P.icon+' '+P.th+' ('+P.val+'★) — '+P.pw); }
+  });
+  $('pool').addEventListener('click',function(ev){
+    if(!S||!iCanAct()) return;
+    var m=ev.target.closest('.pm'); if(!m) return;
+    var mi=parseInt(m.dataset.mi,10);
+    if(S.pend){ log('⚠️ ทำสิ่งที่ค้างให้เสร็จก่อน'); return; }
+    UI.sel=(UI.sel===mi)?-1:mi; sfx('tap'); render();
+  });
+  function slotClick(ev){
+    if(!S||!iCanAct()||S.pend) return;
+    var sl=ev.target.closest('.slot'); if(!sl||!sl.classList.contains('on')) return;
+    if(UI.sel<0){ log('ℹ️ เลือกวัตถุดิบในคลังก่อน แล้วแตะช่องของสูตรยา'); return; }
+    dispatch({t:'place',mi:UI.sel,b:parseInt(sl.dataset.b,10),s:parseInt(sl.dataset.s,10)});
+  }
+  $('bw0').addEventListener('click',slotClick);
+  $('bw1').addEventListener('click',slotClick);
+  $('shelf').addEventListener('click',function(ev){
+    if(!S) return;
+    var c=ev.target.closest('.pot'); if(!c) return;
+    var di=parseInt(c.dataset.di,10), p=viewPlayer(), d=p.done[di]; if(!d) return;
+    var P=POTIONS[d.k];
+    if(!iCanAct()||d.drunk||S.pend||p!==S.players[S.cur]){ log(P.icon+' '+P.th+' — '+P.pw+(d.drunk?' (ดื่มแล้ว)':'')); return; }
+    sfx('tap');
+    openModal(P.icon+' '+P.th,P.pw+' (ทุกพลังไม่ทำให้เกิดการระเบิด)',[
+      {icon:'🥤',name:'ดื่มเลย!',sub:'ใช้พลังของยาขวดนี้'},
+      {icon:'✖',name:'ยังไม่ดื่ม',sub:'เก็บไว้ก่อน'}
+    ],true,function(o){ if(o.name==='ดื่มเลย!') dispatch({t:'drink',di:di}); });
+  });
+  $('act-help').onclick=function(){ sfx('tap'); dispatch({t:'help'}); };
+  $('act-auto').onclick=function(){ sfx('tap'); dispatch({t:'auto'}); };
+  $('act-cancel').onclick=function(){ sfx('tap'); dispatch({t:'cancel'}); };
+  $('act-end').onclick=function(){ sfx('tap'); dispatch({t:'end'}); };
+  $('r-menu').onclick=function(){ sfx('tap'); showScreen('sc-menu'); };
+  $('r-again').onclick=function(){ sfx('tap'); if(UI.lastCfg&&UI.mode!=='online') startGame(UI.lastCfg); else showScreen('sc-menu'); };
+
+  var rp=$('rules-potions');
+  POTIONS.forEach(function(P){
+    var d=el('div','prow');
+    d.appendChild(el('div',null,P.icon));
+    var r=el('div'); r.style.cssText='flex:1;min-width:0';
+    r.appendChild(el('div','on2',P.th+' — '+P.val+'★'));
+    r.appendChild(el('div','tiny muted','สูตร: '+recipeText(P)));
+    r.appendChild(el('div','tiny',P.pw));
+    d.appendChild(r); rp.appendChild(d);
+  });
+
+  for(var b=0;b<10;b++){
+    var bu=el('div','bub'), sz=6+Math.random()*16;
+    bu.style.width=sz+'px'; bu.style.height=sz+'px';
+    bu.style.left=(Math.random()*100)+'%'; bu.style.bottom='-30px';
+    bu.style.animationDuration=(11+Math.random()*13)+'s';
+    bu.style.animationDelay=(-Math.random()*16)+'s';
+    $('bg').appendChild(bu);
+  }
+  window.addEventListener('resize',function(){ fitBoard(); });
+  if(window.ResizeObserver){
+    try{ new ResizeObserver(function(){ fitBoard(); }).observe($('stage')); }catch(e){}
+  }
+  var q=location.search.match(/room=([A-Za-z0-9]{5})/);
+  if(q){ $('o-code').value=q[1].toUpperCase(); showScreen('sc-online'); netStatus('พบรหัสห้อง '+q[1].toUpperCase()+' — ใส่ชื่อแล้วกดเข้าร่วม'); }
+  refreshAudioBtns();
+  selfTest();
+}
+try{ bind(); }catch(e){ showError('init',e); }
+</script>
+</body>
+</html>
