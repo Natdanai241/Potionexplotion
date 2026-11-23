@@ -1,0 +1,2629 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>ศึกลูกแก้วมังกรผู้พิทักษ์ — Dragon Orb Chronicles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ PREMIUM ART DIRECTION & TOKENS ============ */
+:root {
+  --bg: #09030d;
+  --surface: rgba(25, 14, 40, 0.85);
+  --border: rgba(212, 175, 55, 0.25);
+  --border-glow: rgba(212, 175, 55, 0.45);
+  
+  /* Text and Accents */
+  --ink: #0b0718;
+  --txt: #f8f4ff;
+  --dim: #c5b6e2;
+  --dim2: #8a7aa6;
+  
+  /* Dragon Elements Color Palette */
+  --gold: #d4af37;
+  --gold-d: #aa8410;
+  --gold-glow: rgba(212, 175, 55, 0.5);
+  
+  --violet: #8c3ae6;
+  --violet-d: #5e1cb3;
+  --violet-glow: rgba(140, 58, 230, 0.4);
+
+  --teal: #00f0ff;
+  --teal-d: #00a4b3;
+  --teal-glow: rgba(0, 240, 255, 0.4);
+
+  --rose: #ff2a70;
+  --rose-d: #b31043;
+  --rose-glow: rgba(255, 42, 112, 0.4);
+
+  /* Element Names (Thai Dragon Orb Theme) */
+  --color-R: #ff3366; /* ดวงไฟมังกรแดง - Dragon Pyre */
+  --color-Y: #ffcc00; /* แกนสายฟ้าทอง - Thunder Gold */
+  --color-B: #00ccff; /* มุกสมุทรคราม - Abyssal Pearl */
+  --color-K: #9933ff; /* แก้วอาคมทมิฬ - Shadow Rune */
+
+  --ok: #34d399;
+  --bad: #f87171;
+  
+  --cell: 28px;
+  --hole: 21px;
+  --sh1: 0 4px 10px rgba(0, 0, 0, 0.45);
+  --sh2: 0 12px 36px rgba(0, 0, 0, 0.7);
+  --r: 16px;
+  --font: 'Mali', system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; overscroll-behavior: none; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--txt);
+  user-select: none;
+  -webkit-user-select: none;
+  font-size: 14px;
+  line-height: 1.4;
+}
+h1, h2, h3, p { margin: 0; font-weight: 700; }
+.muted { color: var(--dim); }
+.tiny { font-size: 11px; }
+
+/* ============ DYNAMIC MYSTICAL BACKGROUND ============ */
+#bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: 
+    radial-gradient(1200px 700px at 10% -10%, #40105d 0%, transparent 60%),
+    radial-gradient(1000px 600px at 90% 10%, #083b4c 0%, transparent 60%),
+    radial-gradient(900px 700px at 50% 110%, #150524 0%, transparent 70%),
+    linear-gradient(180deg, #0c051a 0%, #06020b 100%);
+}
+#bg .orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.22;
+  animation: floatOrb 30s ease-in-out infinite alternate;
+}
+@keyframes floatOrb {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(50px, -40px, 0) scale(1.15); }
+  100% { transform: translate3d(-30px, 20px, 0) scale(0.9); }
+}
+
+/* Mystical Bubbles (Dragon Breath Particles) */
+.bub {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8), rgba(212,175,55,0.2) 60%, rgba(0,0,0,0));
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+  animation: rise linear infinite;
+}
+@keyframes rise {
+  0% { transform: translateY(15dvh) scale(0.4); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(-105dvh) scale(1.2); opacity: 0; }
+}
+
+/* Dragon Silhouette Banner Art at Bottom */
+.dragon-bg-art {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(0deg, #06020b 10%, transparent);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+/* ============ PREMIUM PLATINUM CARDS & INTERACTIVE ELEMENTS ============ */
+.screen { display: none; position: relative; z-index: 2; height: 100dvh; width: 100%; }
+.screen.on { display: flex; }
+.center { align-items: center; justify-content: center; padding: 16px; overflow-y: auto; flex-direction: column; }
+
+.card {
+  background: linear-gradient(145deg, rgba(25, 14, 40, 0.9), rgba(12, 6, 22, 0.95));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--sh2), inset 0 1px 2px rgba(212, 175, 55, 0.25);
+}
+.card-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+/* Premium Buttons - Authentic 3D Cast Look */
+.btn {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 15px;
+  color: #110903;
+  cursor: pointer;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  background: linear-gradient(180deg, #ffea88 0%, var(--gold) 50%, #9e7500 100%);
+  box-shadow: 0 4px 0 var(--gold-d), 0 8px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.6);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.3);
+  white-space: nowrap;
+}
+.btn:hover:not([disabled]) {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 0 var(--gold-d), 0 10px 20px rgba(212, 175, 55, 0.3), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.btn:active:not([disabled]) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--gold-d), 0 4px 8px rgba(0,0,0,0.5);
+}
+.btn.sec {
+  color: #fff;
+  background: linear-gradient(180deg, #b886ff 0%, var(--violet) 50%, #511899 100%);
+  box-shadow: 0 4px 0 #4a138c, 0 8px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.btn.sec:hover:not([disabled]) {
+  box-shadow: 0 4px 0 #4a138c, 0 10px 20px rgba(140, 58, 230, 0.3);
+}
+.btn.sec:active:not([disabled]) {
+  box-shadow: 0 1px 0 #4a138c;
+}
+
+.btn.tea {
+  color: #031c20;
+  background: linear-gradient(180deg, #a3f7ff 0%, var(--teal) 50%, #008799 100%);
+  box-shadow: 0 4px 0 var(--teal-d), 0 8px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.btn.tea:active:not([disabled]) {
+  box-shadow: 0 1px 0 var(--teal-d);
+}
+
+.btn.rose {
+  color: #ffeef4;
+  background: linear-gradient(180deg, #ff8dae 0%, var(--rose) 50%, #ad083c 100%);
+  box-shadow: 0 4px 0 var(--rose-d), 0 8px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.btn.rose:active:not([disabled]) {
+  box-shadow: 0 1px 0 var(--rose-d);
+}
+
+.btn[disabled] {
+  opacity: 0.3;
+  cursor: not-allowed;
+  filter: grayscale(0.8) brightness(0.7);
+  transform: none !important;
+}
+.btn.sm { font-size: 12px; padding: 8px 12px; border-radius: 8px; }
+
+/* Control Icons */
+.ico {
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid var(--border);
+  color: var(--txt);
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  font-size: 15px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  transition: all 0.15s;
+}
+.ico:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: var(--gold);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+.ico:active { transform: scale(0.9); }
+.ico.off { opacity: 0.35; }
+
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+.row.c { justify-content: center; align-items: center; }
+
+/* Segmented Selectors */
+.seg {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.seg button {
+  flex: 1;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dim);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.seg button.act {
+  background: linear-gradient(180deg, var(--gold), var(--gold-d));
+  color: #110903;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+input[type=text] {
+  font-family: var(--font);
+  font-size: 15px;
+  color: var(--txt);
+  background: rgba(0,0,0,0.45);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input[type=text]:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+label.lb { font-size: 12px; color: var(--dim); display: block; margin: 0 0 5px 2px; }
+
+/* ============ TITLE & BRANDING ============ */
+.wrap { width: min(540px, 100%); display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 5; }
+.logo { text-align: center; margin-bottom: 8px; }
+.logo .dragon-badge {
+  font-size: clamp(44px, 14vw, 70px);
+  filter: drop-shadow(0 8px 16px rgba(212, 175, 55, 0.4));
+  margin-bottom: -10px;
+}
+.logo .dragon-badge span { display: inline-block; animation: bob 4s ease-in-out infinite; }
+.logo .dragon-badge span:nth-child(2) { animation-delay: 0.4s; }
+.logo .dragon-badge span:nth-child(3) { animation-delay: 0.8s; }
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-12px) rotate(4deg); }
+}
+.logo .t1 {
+  font-size: clamp(32px, 10vw, 50px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+  background: linear-gradient(180deg, #fff9e6 0%, var(--gold) 50%, #cc8800 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 10px rgba(212, 175, 55, 0.4));
+}
+.logo .t2 {
+  font-size: 12px;
+  letter-spacing: 5px;
+  color: var(--teal);
+  font-weight: 700;
+  text-shadow: 0 0 8px var(--teal-glow);
+}
+
+/* ============ PREMIUM REAL-TIME BOARD LAYOUT ============ */
+#sc-game {
+  display: none;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
+  gap: 6px;
+  padding: calc(env(safe-area-inset-top) + 6px) 8px calc(env(safe-area-inset-bottom) + 8px);
+  height: 100dvh;
+  overflow: hidden;
+}
+#sc-game.on { display: grid; }
+
+.hdr { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.turnbox {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(140,58,230,0.1));
+  border: 1.5px solid var(--border);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.turnbox .av { font-size: 20px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
+.turnbox .nm { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.turnbox .ph { font-size: 10.5px; color: var(--teal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+#room-chip {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal);
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid var(--teal);
+  border-radius: 10px;
+  padding: 5px 8px;
+  white-space: nowrap;
+  box-shadow: 0 0 6px var(--teal-glow);
+}
+#room-chip.on { display: flex; }
+
+/* Log Console */
+.logbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border);
+}
+.logbar .dotx {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex: 0 0 auto;
+  box-shadow: 0 0 10px var(--gold);
+}
+.logbar .txt {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  color: #ebdfff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.logbar .txt.flash { animation: lf 0.5s ease; }
+@keyframes lf {
+  0% { color: var(--gold); transform: translateX(6px); }
+  100% { color: #ebdfff; transform: none; }
+}
+.logbar button { font-family: inherit; background: none; border: none; color: var(--dim); font-size: 13px; cursor: pointer; padding: 0 2px; }
+
+/* Player Status Panels */
+.players { display: grid; gap: 6px; min-width: 0; }
+.players.p2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.players.p3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.players.p4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.pc {
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: 12px;
+  min-width: 0;
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  overflow: visible;
+  transition: all 0.25s;
+}
+.pc.on { display: flex; }
+.pc.cur {
+  border-color: var(--gold);
+  background: linear-gradient(165deg, rgba(212,175,55,0.18), rgba(0,0,0,0.4));
+  box-shadow: 0 0 14px rgba(212,175,55,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.pc.dc { opacity: 0.45; }
+.pc .l1 { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.pc .avx { font-size: 14px; flex: 0 0 auto; }
+.pc .nm { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+.pc .sc { font-size: 14px; font-weight: 700; color: var(--gold); flex: 0 0 auto; text-shadow: 0 0 6px var(--gold-glow); }
+.pc .l2 { display: flex; gap: 4px; font-size: 9.5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.pc .react { position: absolute; top: -16px; right: 2px; font-size: 20px; opacity: 0; pointer-events: none; z-index: 10; }
+.pc .react.on { animation: popEmote 1.4s ease forwards; }
+@keyframes popEmote {
+  0% { opacity: 0; transform: scale(0.3) translateY(10px); }
+  20% { opacity: 1; transform: scale(1.3) translateY(-5px); }
+  35% { transform: scale(1) translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-16px) scale(0.8); }
+}
+
+/* ============ PRESTIGE DRAGON DISPENSER ============ */
+.stage { min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; overflow: hidden; }
+
+.machine {
+  position: relative;
+  padding: 10px 14px 14px;
+  border-radius: 24px;
+  flex: 0 0 auto;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(35, 15, 60, 0.4) 40%, rgba(10, 5, 20, 0.8) 100%);
+  border: 2px solid var(--border);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.8), inset 0 2px 0 rgba(255,255,255,0.15), 0 0 20px rgba(212,175,55,0.15);
+}
+/* Dragon Sculpt Pillars decoration */
+.machine::before, .machine::after {
+  content: '⚡';
+  position: absolute;
+  top: -8px;
+  font-size: 12px;
+  color: var(--gold);
+  text-shadow: 0 0 8px var(--gold-glow);
+}
+.machine::before { left: 14px; }
+.machine::after { right: 14px; }
+
+.tankbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--dim);
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+.tankbar b { color: var(--teal); font-size: 11px; }
+
+.tracks { display: flex; gap: 6px; align-items: flex-end; justify-content: center; }
+.track {
+  position: relative;
+  width: var(--cell);
+  height: calc(var(--cell) * 9);
+  border-radius: calc(var(--cell)/2);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.75), rgba(20, 10, 35, 0.4));
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.15), inset 0 10px 16px rgba(0,0,0,0.8);
+}
+.track::before {
+  content: '';
+  position: absolute;
+  left: 20%;
+  top: 5px;
+  bottom: 5px;
+  width: 15%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+}
+.track .lockline {
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--rose) 0 4px, transparent 4px 8px);
+  bottom: calc(var(--cell) * 8);
+  pointer-events: none;
+  box-shadow: 0 0 4px var(--rose);
+}
+
+/* ============ PRESTIGE GLOWING DRAGON ORBS ============ */
+.marble {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  width: calc(var(--cell) - 4px);
+  height: calc(var(--cell) - 4px);
+  border-radius: 50%;
+  transform: translateY(calc(var(--i,0) * var(--cell) * -1));
+  transition: transform 0.22s cubic-bezier(0.25, 1.15, 0.5, 1), opacity 0.2s, filter 0.2s, box-shadow 0.2s;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 10%, rgba(255,255,255,0) 30%),
+    radial-gradient(circle at 50% 115%, var(--m3) 0%, rgba(0,0,0,0) 50%),
+    radial-gradient(circle at 40% 40%, var(--m1) 0%, var(--m2) 45%, var(--m3) 100%);
+  box-shadow:
+    inset -3px -3px 8px rgba(0,0,0,0.65),
+    inset 2px 3px 6px rgba(255,255,255,0.35),
+    0 4px 8px rgba(0,0,0,0.6),
+    0 0 12px var(--mg);
+}
+/* Shining core reflection layer */
+.marble::after {
+  content: '';
+  position: absolute;
+  left: 24%;
+  top: 14%;
+  width: 28%;
+  height: 20%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  filter: blur(0.5px);
+  transform: rotate(-25deg);
+}
+
+/* Theme Elements Color Variants */
+.marble.cR { --m1: #ff7e9a; --m2: #ff2a4b; --m3: #800018; --mg: rgba(255, 42, 75, 0.6); } /* ดวงไฟมังกรแดง */
+.marble.cY { --m1: #fff2a3; --m2: #e6b200; --m3: #6b4c00; --mg: rgba(230, 178, 0, 0.6); }  /* แกนสายฟ้าทอง */
+.marble.cB { --m1: #a1f3ff; --m2: #00bfff; --m3: #004c66; --mg: rgba(0, 191, 255, 0.6); }  /* มุกสมุทรคราม */
+.marble.cK { --m1: #e9b3ff; --m2: #a200ff; --m3: #410066; --mg: rgba(162, 0, 255, 0.5); }  /* แก้วอาคมทมิฬ */
+
+.marble.locked { filter: brightness(0.4) saturate(0.4); }
+.marble.locked::after { opacity: 0.3; }
+
+.marble.pick { cursor: pointer; }
+.marble.pick:hover {
+  filter: brightness(1.25);
+  box-shadow: 
+    inset -3px -3px 8px rgba(0,0,0,0.65),
+    inset 2px 3px 6px rgba(255,255,255,0.35),
+    0 0 16px var(--mg);
+}
+.marble.hl {
+  box-shadow: 
+    inset -3px -3px 8px rgba(0,0,0,0.65),
+    0 0 0 2px var(--teal),
+    0 0 20px var(--teal);
+}
+.marble.chosen {
+  filter: brightness(1.4);
+  box-shadow: 
+    inset -3px -3px 8px rgba(0,0,0,0.5),
+    0 0 0 3px var(--gold),
+    0 0 24px var(--gold);
+  z-index: 15;
+}
+.marble.boom { animation: explodeOrb 0.45s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; z-index: 20; }
+@keyframes explodeOrb {
+  0% { filter: brightness(1); }
+  40% { filter: brightness(3) saturate(1.5); transform: translateY(calc(var(--i,0) * var(--cell) * -1)) scale(1.5); opacity: 1; }
+  100% { filter: brightness(4); opacity: 0; transform: translateY(calc(var(--i,0) * var(--cell) * -1)) scale(0.1); }
+}
+.marble.gone { opacity: 0; transform: translateY(calc(var(--i,0) * var(--cell) * -1)) scale(0.1); }
+.marble.newin { opacity: 0; }
+
+.flashwrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 24px;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.7), transparent 70%);
+}
+.flashwrap.on { animation: flashFX 0.4s ease; }
+@keyframes flashFX { 0% { opacity: 0.9; } 100% { opacity: 0; } }
+
+/* ============ DRAFT PREVIEW STACKS ============ */
+.stacks { display: flex; gap: 5px; width: 100%; max-width: 520px; padding: 0 2px; flex: 0 0 auto; }
+.stk {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  font-size: 9px;
+  color: var(--dim);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.stk .ic { font-size: 16px; line-height: 1; }
+.stk .nmx { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; color: #dcd3f5; font-weight: 700; }
+.stk .vl { color: var(--gold); font-weight: 700; font-size: 10px; }
+.stk:hover:not(.empty) {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--gold);
+}
+.stk.sel {
+  border-color: var(--teal);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.4);
+  animation: pulseLight 1.5s infinite;
+}
+@keyframes pulseLight {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+.stk.empty { opacity: 0.25; }
+
+/* ============ NESTED LAB BOARD ============ */
+.lab { display: flex; flex-direction: column; gap: 5px; min-width: 0; overflow: hidden; }
+.labtop { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.labtop .own { font-size: 11px; font-weight: 700; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+
+.pool {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 14px;
+  flex: 0 0 auto;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border);
+}
+.pslot { width: 26px; height: 26px; border-radius: 50%; border: 1.5px dashed rgba(212, 175, 55, 0.4); position: relative; flex: 0 0 auto; display: none; }
+.pslot.on { display: block; }
+.pslot.over { border-color: var(--bad); box-shadow: 0 0 8px rgba(248, 113, 113, 0.5); }
+
+/* Pocket Spheres in Inventory */
+.pm {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.45) 10%, rgba(255,255,255,0) 30%),
+    radial-gradient(circle at 40% 40%, var(--m1) 0%, var(--m2) 45%, var(--m3) 100%);
+  box-shadow: inset -2px -2px 6px rgba(0,0,0,0.6), inset 1px 2px 4px rgba(255,255,255,0.4), 0 3px 6px rgba(0,0,0,0.5);
+}
+.pm.cR { --m1: #ff7e9a; --m2: #ff2a4b; --m3: #800018; }
+.pm.cY { --m1: #fff2a3; --m2: #e6b200; --m3: #6b4c00; }
+.pm.cB { --m1: #a1f3ff; --m2: #00bfff; --m3: #004c66; }
+.pm.cK { --m1: #e9b3ff; --m2: #a200ff; --m3: #410066; }
+.pm.sel { box-shadow: 0 0 0 2.5px var(--gold), 0 0 12px var(--gold); }
+.pm.wild::after { content: '✦'; position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; color: #fff; text-shadow: 0 0 6px #fff; }
+
+.brewrow { display: flex; gap: 6px; min-width: 0; }
+.bw {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 8px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--sh1);
+}
+.bw.empty { opacity: 0.35; }
+.bw .h { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.bw .ic { font-size: 15px; flex: 0 0 auto; }
+.bw .nm { font-size: 10.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+.bw .vl { font-size: 10px; font-weight: 700; color: #110903; background: linear-gradient(180deg, #ffea88, var(--gold)); border-radius: 6px; padding: 0 6px; flex: 0 0 auto; }
+
+.slots { display: flex; gap: 4px; flex-wrap: wrap; }
+.slot { width: var(--hole); height: var(--hole); border-radius: 50%; border: 2.5px solid; display: none; position: relative; flex: 0 0 auto; }
+.slot.on { display: block; }
+.slot.sR { border-color: var(--color-R); background: rgba(255, 51, 102, 0.12); }
+.slot.sY { border-color: var(--color-Y); background: rgba(255, 204, 0, 0.12); }
+.slot.sB { border-color: var(--color-B); background: rgba(0, 204, 255, 0.12); }
+.slot.sK { border-color: var(--color-K); background: rgba(153, 51, 255, 0.12); }
+
+.slot.fill {
+  border-color: transparent;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 10%, rgba(255,255,255,0) 30%),
+    radial-gradient(circle at 40% 40%, var(--m1) 0%, var(--m2) 45%, var(--m3) 100%);
+  box-shadow: inset -2px -2px 6px rgba(0,0,0,0.6), inset 1px 2px 4px rgba(255,255,255,0.45), 0 2px 4px rgba(0,0,0,0.5);
+}
+.slot.fill.sR { --m1: #ff7e9a; --m2: #ff2a4b; --m3: #800018; }
+.slot.fill.sY { --m1: #fff2a3; --m2: #e6b200; --m3: #6b4c00; }
+.slot.fill.sB { --m1: #a1f3ff; --m2: #00bfff; --m3: #004c66; }
+.slot.fill.sK { --m1: #e9b3ff; --m2: #a200ff; --m3: #410066; }
+
+.slot.can {
+  cursor: pointer;
+  box-shadow: 0 0 0 2px #fff, 0 0 10px #fff;
+  animation: targetPulse 1.2s infinite;
+}
+@keyframes targetPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+/* Completed Spells Cabinet */
+.shelfwrap { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.shelf {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 36px;
+  align-items: center;
+  padding: 0 2px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.shelf::-webkit-scrollbar { display: none; }
+
+.pot {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  font-family: inherit;
+  color: var(--txt);
+  transition: all 0.15s;
+}
+.pot.drunk { opacity: 0.35; filter: grayscale(0.85); }
+.pot.ready {
+  border-color: var(--teal);
+  box-shadow: 0 0 8px var(--teal-glow);
+}
+.pot:hover:not(.drunk) {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: var(--gold);
+}
+.pot .v { color: var(--gold); font-weight: 700; font-size: 10px; }
+
+.emptyhint { font-size: 10.5px; color: var(--dim2); white-space: nowrap; }
+
+.bannr {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #d6fff8;
+  min-width: 0;
+  background: linear-gradient(100deg, rgba(0, 240, 255, 0.2), rgba(140, 58, 230, 0.15));
+  border: 1px solid var(--teal);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
+}
+.bannr.on { display: flex; }
+.bannr span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 700; }
+
+.actions { display: flex; gap: 6px; min-width: 0; }
+.actions .btn { flex: 1 1 0; min-width: 0; padding: 11px 4px; font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
+
+/* ============ PRESTIGE MODALS ============ */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(5, 2, 10, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.modal.on { display: flex; }
+.mbox {
+  width: min(520px, 100%);
+  max-height: 85dvh;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 2px solid var(--gold);
+  box-shadow: var(--sh2), 0 0 24px rgba(212, 175, 55, 0.2);
+}
+
+.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.opt {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  padding: 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 11.5px;
+  text-align: left;
+  color: var(--txt);
+  font-family: var(--font);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+.opt:hover:not([disabled]) {
+  border-color: var(--gold);
+  background: rgba(212, 175, 55, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+}
+.opt .oi { font-size: 20px; display: flex; align-items: center; gap: 6px; }
+.opt .on2 { font-weight: 700; font-size: 12.5px; color: var(--gold); }
+.opt[disabled] { opacity: 0.3; cursor: not-allowed; }
+
+.dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 35%),
+             radial-gradient(circle at 40% 40%, var(--m1), var(--m2) 45%, var(--m3));
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.dot.cR { --m1: #ff7e9a; --m2: #ff2a4b; --m3: #800018; }
+.dot.cY { --m1: #fff2a3; --m2: #e6b200; --m3: #6b4c00; }
+.dot.cB { --m1: #a1f3ff; --m2: #00bfff; --m3: #004c66; }
+.dot.cK { --m1: #e9b3ff; --m2: #a200ff; --m3: #410066; }
+
+.rules p { margin: 6px 0; font-size: 12px; line-height: 1.6; }
+.rules h3 { color: var(--gold); font-size: 14px; margin-top: 12px; border-left: 3px solid var(--gold); padding-left: 6px; }
+.rules ul { margin: 6px 0; padding-left: 18px; font-size: 12px; line-height: 1.6; }
+.prow { display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; margin: 6px 0; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); }
+
+#loglist { display: flex; flex-direction: column; gap: 5px; font-size: 12px; max-height: 55dvh; overflow-y: auto; }
+#loglist div { padding: 6px 10px; border-radius: 8px; background: rgba(255,255,255,0.04); border-left: 3px solid var(--gold); }
+
+.rtab { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0; }
+.rtab th, .rtab td { padding: 8px 4px; border-bottom: 1px solid var(--border); text-align: center; }
+.rtab th { color: var(--dim); font-size: 11px; font-weight: 600; }
+.rtab td:first-child { text-align: left; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.rtab tr.win td { color: var(--gold); font-weight: 700; background: rgba(212, 175, 55, 0.12); }
+
+#errpanel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: #5c0815;
+  border-top: 3px solid var(--rose);
+  padding: 10px 14px;
+  font-size: 12px;
+  max-height: 40dvh;
+  overflow: auto;
+}
+#errpanel.on { display: flex; }
+#errtext { font-family: monospace; font-size: 11px; white-space: pre-wrap; color: #ffd2d8; }
+
+@media (max-width: 380px) {
+  .actions .btn { font-size: 11.5px; padding: 10px 2px; }
+  .pslot { width: 23px; height: 23px; }
+  :root { --hole: 18px; }
+}
+@media (min-height: 780px) { :root { --hole: 23px; } .pslot { width: 30px; height: 30px; } }
+</style>
+</head>
+<body>
+
+<div id="bg">
+  <div class="orb" style="width:280px;height:280px;background:var(--rose-glow);left:-60px;top:8%"></div>
+  <div class="orb" style="width:320px;height:320px;background:var(--teal-glow);right:-80px;top:30%;animation-delay:-6s"></div>
+  <div class="orb" style="width:260px;height:260px;background:var(--gold-glow);left:30%;bottom:-60px;animation-delay:-12s"></div>
+  <div class="dragon-bg-art"></div>
+</div>
+
+<div id="errpanel">
+  <b>⚠️ ระบบขัดข้องวิหารมังกร</b>
+  <div id="errtext"></div>
+  <div class="row">
+    <button class="btn sm rose" id="errclose">ปิด</button>
+    <button class="btn sm sec" id="errreload">เชื่อมต่อใหม่</button>
+  </div>
+</div>
+
+<!-- ============ MENU ============ -->
+<section id="sc-menu" class="screen on center">
+  <div class="wrap">
+    <div class="logo">
+      <div class="dragon-badge"><span>🐉</span><span>🔮</span><span>🔥</span></div>
+      <div class="t1">ศึกลูกแก้วมังกรผู้พิทักษ์</div>
+      <div class="t2">DRAGON ORB CHRONICLES</div>
+      <div class="tiny muted" style="margin-top:5px">สถาบันผู้พิทักษ์ศักดิ์สิทธิ์ • ห้องเก็บแก้วมังกรอัญมณีอาคม</div>
+    </div>
+    <div class="card" style="padding:16px;display:flex;flex-direction:column;gap:10px">
+      <button class="btn" id="m-solo">🤖 ท้าดวลผู้คุ้มกันมังกร (สู้กับบอท)</button>
+      <button class="btn sec" id="m-local">👥 ศึกร่วมวิหาร 2–4 คน (เครื่องเดียวกัน)</button>
+      <button class="btn tea" id="m-online">🌐 ศึกข้ามมิติ P2P (ออนไลน์กับเพื่อน)</button>
+      <div class="row c" style="margin-top:2px">
+        <button class="btn sm sec" id="m-rules">📖 ศิลาจารึกวิธีเล่น</button>
+        <button class="ico" id="m-music">🎵</button>
+        <button class="ico" id="m-sfx">🔊</button>
+      </div>
+    </div>
+    <div class="tiny muted" style="text-align:center">กติกาวิหารมังกรศักดิ์สิทธิ์ • แก้วอัญมณี 80 ลูก • ม้วนคาถา 64 ชุด • เหรียญตราทักษะ 15 ดวง</div>
+  </div>
+</section>
+
+<!-- ============ SETUP ============ -->
+<section id="sc-setup" class="screen center">
+  <div class="wrap card" style="padding:20px">
+    <div class="card-header">
+      <h2 style="font-size:20px; color:var(--gold)">🔮 อัญเชิญผู้พิทักษ์</h2>
+    </div>
+    <div>
+      <label class="lb">ชื่อผู้พิทักษ์ของคุณ</label>
+      <input type="text" id="s-name" maxlength="10" value="นักเวทมังกร">
+    </div>
+    <div style="margin-top:10px">
+      <label class="lb">จำนวนผู้ร่วมชะตา</label>
+      <div class="seg" id="s-count">
+        <button data-v="2" class="act">2 คน</button>
+        <button data-v="3">3 คน</button>
+        <button data-v="4">4 คน</button>
+      </div>
+    </div>
+    <div id="s-diffwrap" style="margin-top:10px">
+      <label class="lb">ระดับสติปัญญาของบอทผู้ดูแล</label>
+      <div class="seg" id="s-diff">
+        <button data-v="easy">ฝึกหัด</button>
+        <button data-v="normal" class="act">ผู้ดูแลวิหาร</button>
+        <button data-v="hard">ราชามังกร</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn sec" id="s-back" style="flex:0 0 32%">← กลับวิหาร</button>
+      <button class="btn" id="s-start" style="flex:1">เริ่มพิธีอัญเชิญ ▶</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ONLINE ============ -->
+<section id="sc-online" class="screen center">
+  <div class="wrap card" style="padding:20px">
+    <div class="card-header">
+      <h2 style="font-size:20px; color:var(--gold)">🌐 พิธีเชื่อมพลังข้ามมิติ</h2>
+    </div>
+    <div class="tiny muted" style="margin-bottom:8px">เชื่อมต่อพลังจิตโดยตรง (P2P) ไม่ต้องผ่านเซิร์ฟเวอร์ส่วนกลาง มั่นคงและปลอดภัย</div>
+    <div>
+      <label class="lb">นามแห่งจิต (ใช้ชื่อเดิมหากหลุดแล้วต้องการกลับเข้ามา)</label>
+      <input type="text" id="o-name" maxlength="10" value="นักเวทมังกร">
+    </div>
+    <button class="btn" id="o-create" style="margin-top:10px">➕ จารึกค่ายกลวิหารใหม่</button>
+    <div class="row" style="margin-top:10px">
+      <input type="text" id="o-code" maxlength="5" placeholder="รหัสค่ายกล" style="flex:1;text-transform:uppercase;letter-spacing:4px;text-align:center;font-weight:700">
+      <button class="btn tea" id="o-join" style="flex:0 0 33%">ร่วมพิธี</button>
+    </div>
+    <div id="o-lobby" style="display:none;flex-direction:column;gap:10px;border-top:1.5px solid var(--border);padding-top:12px;margin-top:10px">
+      <div class="row c" style="justify-content:space-between">
+        <div class="tiny">รหัสผ่านมิติ: <b id="o-roomcode" style="color:var(--teal);letter-spacing:4px;font-size:22px">-----</b></div>
+        <button class="btn sm sec" id="o-copy">🔗 คัดลอกสารมิติ</button>
+      </div>
+      <div id="o-status" class="tiny" style="color:var(--teal)">กำลังเชื่อมค่ายกลเวทมนตร์…</div>
+      <div id="o-players" style="display:flex;flex-direction:column;gap:6px"></div>
+      <button class="btn" id="o-start">เริ่มพิธีกรรมมังกร ▶ (เจ้าภาพเท่านั้น)</button>
+    </div>
+    <button class="btn sec" id="o-back" style="margin-top:10px">← กลับสู่หน้าหลัก</button>
+  </div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section id="sc-game" class="screen">
+  <div class="hdr">
+    <button class="ico" id="g-menu">☰</button>
+    <div class="turnbox">
+      <span class="av" id="turn-av">🧙</span>
+      <div style="flex:1;min-width:0">
+        <div class="nm" id="turn-nm">—</div>
+        <div class="ph" id="turn-ph">—</div>
+      </div>
+    </div>
+    <div id="room-chip">🏷️ มิติ: <span id="room-code-live">-----</span></div>
+    <button class="ico" id="g-music">🎵</button>
+    <button class="ico" id="g-sfx">🔊</button>
+    <button class="ico" id="g-rules">❓</button>
+  </div>
+
+  <div class="logbar">
+    <i class="dotx"></i>
+    <div class="txt" id="logline">ยินดีต้อนรับสู่แท่นพิธีลูกแก้วมังกรศักดิ์สิทธิ์!</div>
+    <button id="g-log">📜</button>
+  </div>
+
+  <div class="players p2" id="players">
+    <div class="pc" id="pc0"><div class="react"></div><div class="l1"><span class="avx">🐉</span><span class="nm">P1</span><span class="sc">0</span></div><div class="l2"></div></div>
+    <div class="pc" id="pc1"><div class="react"></div><div class="l1"><span class="avx">🔮</span><span class="nm">P2</span><span class="sc">0</span></div><div class="l2"></div></div>
+    <div class="pc" id="pc2"><div class="react"></div><div class="l1"><span class="avx">✨</span><span class="nm">P3</span><span class="sc">0</span></div><div class="l2"></div></div>
+    <div class="pc" id="pc3"><div class="react"></div><div class="l1"><span class="avx">🔥</span><span class="nm">P4</span><span class="sc">0</span></div><div class="l2"></div></div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="machine" id="machine">
+      <div class="flashwrap" id="flashwrap"></div>
+      <div class="tankbar">🫙 คลังพลังเวท <b id="tank-count">0</b> • ⭐ ตรานับถอยหลัง <b id="skill-left">0</b> • 🏅 ตราเวทกองกลาง <b id="skill-pool">0</b> • 🆘 ช่วยเหลือ <b id="help-left">21</b></div>
+      <div class="tracks" id="tracks">
+        <div class="track" data-t="0"><i class="lockline"></i></div>
+        <div class="track" data-t="1"><i class="lockline"></i></div>
+        <div class="track" data-t="2"><i class="lockline"></i></div>
+        <div class="track" data-t="3"><i class="lockline"></i></div>
+        <div class="track" data-t="4"><i class="lockline"></i></div>
+      </div>
+    </div>
+    <div class="stacks" id="stacks">
+      <div class="stk" data-s="0"><div class="ic">📜</div><div class="nmx">—</div><div class="vl">0</div></div>
+      <div class="stk" data-s="1"><div class="ic">📜</div><div class="nmx">—</div><div class="vl">0</div></div>
+      <div class="stk" data-s="2"><div class="ic">📜</div><div class="nmx">—</div><div class="vl">0</div></div>
+      <div class="stk" data-s="3"><div class="ic">📜</div><div class="nmx">—</div><div class="vl">0</div></div>
+      <div class="stk" data-s="4"><div class="ic">📜</div><div class="nmx">—</div><div class="vl">0</div></div>
+    </div>
+  </div>
+
+  <div class="lab">
+    <div class="bannr" id="bannr">
+      <span id="bannr-t">—</span>
+      <button class="btn sm tea" id="pend-done" style="display:none;padding:5px 10px">สำเร็จพิธี</button>
+    </div>
+    <div class="labtop">
+      <div class="own" id="lab-owner">โต๊ะผู้เวทมังกรของคุณ</div>
+      <div class="pool" id="pool">
+        <span class="pslot on"></span><span class="pslot on"></span><span class="pslot on"></span>
+        <span class="pslot"></span><span class="pslot"></span><span class="pslot"></span><span class="pslot"></span><span class="pslot"></span>
+      </div>
+    </div>
+    <div class="brewrow">
+      <div class="bw" id="bw0">
+        <div class="h"><span class="ic">⬜</span><span class="nm">แท่นศิลาว่าง</span><span class="vl">-</span></div>
+        <div class="slots"><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i></div>
+      </div>
+      <div class="bw" id="bw1">
+        <div class="h"><span class="ic">⬜</span><span class="nm">แท่นศิลาว่าง</span><span class="vl">-</span></div>
+        <div class="slots"><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i></div>
+      </div>
+    </div>
+    <div class="shelfwrap">
+      <div class="shelf" id="shelf"></div>
+      <button class="ico" id="g-allpot" style="width:30px;height:30px;min-width:30px;font-size:13px">🗄️</button>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn sm sec" id="act-help">🆘 สื่อจิตขออาจารย์ช่วย</button>
+    <button class="btn sm tea" id="act-auto">✨ วางแก้วมังกรด่วน</button>
+    <button class="btn sm rose" id="act-cancel" style="display:none">✖ สลัดเวททิ้ง</button>
+    <button class="btn sm" id="act-end">เสร็จสิ้นรอบ ▶</button>
+  </div>
+</section>
+
+<!-- ============ RESULT ============ -->
+<section id="sc-result" class="screen center">
+  <div class="wrap card" style="padding:20px">
+    <div class="card-header">
+      <h2 style="font-size:22px; color:var(--gold)">🏆 ตราประกาศความยิ่งใหญ่</h2>
+    </div>
+    <div id="r-win" style="text-align:center;font-size:16px;color:var(--gold);font-weight:700;margin-bottom:10px"></div>
+    <table class="rtab">
+      <thead>
+        <tr>
+          <th>ผู้พิทักษ์</th>
+          <th>📜 ม้วนคาถา</th>
+          <th>⭐ ตรา×4</th>
+          <th>🆘 โทษ×−2</th>
+          <th>รวม</th>
+        </tr>
+      </thead>
+      <tbody id="r-body"></tbody>
+    </table>
+    <div id="r-note" class="tiny muted" style="text-align:center;margin-bottom:10px"></div>
+    <div class="row">
+      <button class="btn sec" id="r-menu" style="flex:1">กลับสู่วิหารหลัก</button>
+      <button class="btn" id="r-again" style="flex:1">เปิดศึกรอบใหม่</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="modal-pick">
+  <div class="card mbox">
+    <h3 id="mp-title" style="color:var(--gold)">สลักจารึก</h3>
+    <div class="tiny muted" id="mp-desc"></div>
+    <div class="opts" id="mp-opts"></div>
+    <button class="btn sec sm" id="mp-cancel">ปล่อยผ่านพลัง</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-log">
+  <div class="card mbox">
+    <h3 style="color:var(--gold)">📜 ศิลาจารึกประวัติมนตรา</h3>
+    <div id="loglist"></div>
+    <button class="btn sm" id="log-close">ปิดสารเวท</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-rules">
+  <div class="card mbox rules">
+    <div class="card-header">
+      <h2 style="font-size:19px; color:var(--gold)">📖 คัมภีร์ศึกลูกแก้วมังกรผู้พิทักษ์</h2>
+    </div>
+    <p>ยินดีต้อนรับสู่ศึกทดสอบปลายภาคของเหล่าผู้พิทักษ์มังกร! เจ้าต้องรวบรวมลูกแก้วอัญมณีธาตุจากแท่นพิธีกลางไปเติมเต็มม้วนคาถาอาคมเพื่อเก็บคะแนนสูงสุด!</p>
+    
+    <h3>🎯 การควบคุมเวทมนตร์ในรอบของคุณ</h3>
+    <ul>
+      <li><b>เงื่อนไขบังคับ:</b> อัญเชิญหยิบลูกแก้วอัญมณี 1 ลูกจากเครื่องจ่าย (ยกเว้นแถวบนสุดที่มีเส้นประสีแดงกักไว้ เจ้าไม่อาจหยิบได้โดยตรง)</li>
+      <li>เมื่อหยิบออก ลูกแก้วด้านบนจะถล่มลงมาตามราง <b>หากธาตุสีเดียวกันมาปะทะกัน -> จะเกิดการระเบิดพลังมังกร!</b> เจ้าจะได้เก็บลูกแก้วสีนั้นทั้งหมดในกลุ่ม</li>
+      <li>แรงถล่มจากการระเบิดระลอกแรกอาจชักนำให้สีอื่นเกิดการปะทะกันต่อเนื่องเป็น <b>ลูกโซ่พลังงาน</b> ซึ่งเจ้าจะได้รวบรวมทั้งหมด!</li>
+      <li>ระหว่างรอบ เจ้าสามารถเลือก<b>ดื่มโอสถศักดิ์สิทธิ์</b>ที่ปรุงเสร็จเพื่อปลดปล่อยพลังพิเศษ หรือ<b>สื่อจิตขอท่านอาจารย์พิทักษ์ช่วย</b> (ทำได้ 1 ครั้งต่อรอบ)</li>
+      <li>นำลูกแก้วอัญมณีมาวางลงบนม้วนคาถาที่มีสีตรงกันเท่านั้น • แท่นคลังเก็บลูกแก้วได้สูงสุด <b>3 ลูก</b> ส่วนเกินต้องสลายคืนวิหารเมื่อจบเทิร์น</li>
+      <li>เมื่อจบรอบ: เจ้าจะสามารถหยิบม้วนคาถาใหม่จาก 5 กองกลางวิหารมาเติมบนแท่นปรุงให้ครบ 2 ม้วนได้เสมอ</li>
+    </ul>
+
+    <h3>🆘 ความช่วยเหลือจากวิหารผู้พิทักษ์</h3>
+    <p>สื่อจิตขอผู้ช่วยได้ 1 ครั้งต่อรอบ: ได้รับเบี้ยบาป 1 ชิ้นและระบุหยิบแก้วอัญมณีได้ 1 ลูกทันทีโดย<b>ไม่ก่อให้เกิดการระเบิด</b> • เบี้ยบาปแต่ละชิ้นจะ <b>หักคะแนนตอนจบเกม −2 คะแนน</b></p>
+
+    <h3>⭐ ตราเกียรติยศผู้พิทักษ์ (ได้รับ 4 คะแนนต่อตรา)</h3>
+    <ul>
+      <li>สลักม้วนคาถา<b>ประเภทเดียวกันครบ 3 ม้วน</b> -> ได้รับตราเกียรติยศ 1 ตรา (จำกัด 1 รางวัลต่อประเภทคาถา)</li>
+      <li>สลักม้วนคาถา<b>ต่างประเภทกันครบ 5 ประเภท</b> -> ได้รับตราเกียรติยศพิเศษ 1 ตรา (จำกัด 1 รางวัลตลอดทั้งเกม)</li>
+    </ul>
+
+    <h3>🏁 สิ้นสุดพิธีกรรม</h3>
+    <p>เมื่อกองเหรียญตราเกียรติยศนับถอยหลังหมดลง หรือกองม้วนคาถากองใดกองหนึ่งหมดลง -> เกมจะดำเนินต่อไปจนครบจบรอบ เพื่อให้ผู้พิทักษ์ทุกคนได้รับจำนวนสิทธิ์เทิร์นเท่าเทียมกัน</p>
+    <p><b>การคิดคะแนนมังกร</b> = คะแนนรวมบนม้วนคาถาที่ปรุงสำเร็จ + (เหรียญตราเกียรติยศ × 4) − (เบี้ยช่วยเหลืออาจารย์ × 2)</p>
+
+    <h3>🧪 มหาอัญมณีเวทมนตร์ทั้ง 8 ประการ (ทุกความสามารถพิเศษจะไม่กระตุ้นให้เกิดการระเบิดพลัง)</h3>
+    <div id="rules-potions"></div>
+    <button class="btn" id="rules-close">รับทราบบัญญัติมังกร!</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" onerror="window.__PEERFAIL=true"></script>
+<script>
+"use strict";
+
+function showError(where, e){
+  try{
+    var p=document.getElementById('errpanel'), t=document.getElementById('errtext');
+    if(p&&t){ p.classList.add('on'); t.textContent += '['+where+'] '+((e&&e.message)?e.message:String(e))+'\n'; }
+    if(window.console&&console.error) console.error(where, e);
+  }catch(x){}
+}
+window.addEventListener('error', function(ev){ showError('runtime', ev.error||ev.message); });
+window.addEventListener('unhandledrejection', function(ev){ showError('promise', ev.reason); });
+
+function $(id){ return document.getElementById(id); }
+function el(tag,cls,txt){ var d=document.createElement(tag); if(cls)d.className=cls; if(txt!=null)d.textContent=txt; return d; }
+function clear(n){ while(n&&n.firstChild) n.removeChild(n.firstChild); }
+function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t; } return a; }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+/* ---------------- PREMIUM THEME DATA ---------------- */
+var CNAME={R:'ดวงไฟมังกรแดง',Y:'แกนสายฟ้าทอง',B:'มุกสมุทรคราม',K:'แก้วอาคมทมิฬ'};
+var CSHORT={R:'แดงไฟ',Y:'ทองฟ้า',B:'สมุทรคราม',K:'ทมิฬอาคม'};
+var CLIST=['R','Y','B','K'];
+var POTIONS=[
+ {k:0,th:'โอสถแห่งปัญญาเบิกเนตร',en:'Elixir of Dragon Wisdom',icon:'📘',val:3,recipe:['B','B','R','Y'],
+  pw:'อัญเชิญหยิบอัญมณีเวท 1 ลูกจากเครื่องจ่ายโดยตรง'},
+ {k:1,th:'คาถาสะกดดวงใจมังกร',en:'Spell of Blinded Dragon Love',icon:'💘',val:3,recipe:['R','R','Y','K'],
+  pw:'ขโมยอัญมณีเวท 1 ลูกจากม้วนคาถาของคู่แข่ง'},
+ {k:2,th:'เนตรแม่เหล็กราชามังกร',en:'Eye of Magnetic Attraction',icon:'🧲',val:4,recipe:['Y','Y','B','B','K'],
+  pw:'หยิบอัญมณีเวท 2 ลูกที่ติดกันในรางเดียวกัน (ต้องคนละธาตุ)'},
+ {k:3,th:'มนตราแก้วสายรุ้งปาฏิหาริย์',en:'Chant of Prismatic Joy',icon:'🌈',val:4,recipe:['R','Y','B','K','K'],
+  pw:'แปลงธาตุแก้วในคลังทั้งหมดให้วางในช่องธาตุใดก็ได้ไร้เงื่อนไขสี'},
+ {k:4,th:'น้ำวารีอเวจีกลืนฟ้า',en:'Deep Sea Abyssal Draft',icon:'🌀',val:5,recipe:['K','K','K','B','B'],
+  pw:'หยิบอัญมณีเวทจากช่องล่างสุดของราง ได้สูงสุดสีละ 1 ลูก'},
+ {k:5,th:'มิติผืนทรายไร้กาลเวลา',en:'Mystic Sands of Past Time',icon:'⏳',val:5,recipe:['R','R','Y','Y','B','B'],
+  pw:'ปลุกวิญญาณพลังของโอสถล่าสุดที่เจ้าเพิ่งจะดื่มไป ให้สำแดงผลอีกครา'},
+ {k:6,th:'ขี้ผึ้งหลอมดวงพลังวิญญาณ',en:'Balm of Extreme Stickiness',icon:'🍯',val:6,recipe:['Y','Y','K','K','R','B'],
+  pw:'ดึงธาตุอัญมณีสีเดียวกันที่ติดกันตั้งแต่ 2 ลูกขึ้นไปในรางเดียวกันขึ้นมาทั้งหมด'},
+ {k:7,th:'พิธีชำระแก้วมังกรด้วยลาวา',en:'Lavamancing Purifying Ritual',icon:'🌋',val:7,recipe:['R','R','K','K','B','Y','Y'],
+  pw:'ทิ้งทำลายแก้วอัญมณีสีเดียวกันในรางเดียวกันกลับสู่วิหารสูงสุด 5 ลูก'}
+];
+var SKILL_COUNTDOWN={2:4,3:5,4:6};
+var SKILL_TOTAL=15;
+var AVATARS=['🐉','🔮','✨','🔥'];
+var TRACK_CAP=9, LOCK_IDX=8, POOL_MAX=3;
+
+/* ---------------- PREMIUM MYSTICAL AUDIO SYSTEM ---------------- */
+var AU={ctx:null,music:true,sfx:true,mg:null,master:null,timer:null,step:0,next:0,started:false};
+function auInit(){
+  try{
+    if(AU.ctx){ if(AU.ctx.state==='suspended') AU.ctx.resume(); return; }
+    var C=window.AudioContext||window.webkitAudioContext; if(!C) return;
+    AU.ctx=new C();
+    AU.master=AU.ctx.createGain(); AU.master.gain.value=.85; AU.master.connect(AU.ctx.destination);
+    AU.mg=AU.ctx.createGain(); AU.mg.gain.value=.0001; AU.mg.connect(AU.master);
+  }catch(e){ showError('audio',e); }
+}
+function tone(f,d,ty,v,when,dest){
+  try{ if(!AU.ctx) return;
+    var t=when||AU.ctx.currentTime, o=AU.ctx.createOscillator(), g=AU.ctx.createGain();
+    o.type=ty||'sine'; o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(Math.max(.0002,v||.2),t+.012);
+    g.gain.exponentialRampToValueAtTime(.0001,t+(d||.2));
+    o.connect(g); g.connect(dest||AU.master); o.start(t); o.stop(t+(d||.2)+.04);
+  }catch(e){}
+}
+function noise(d,v,f){
+  try{ if(!AU.ctx) return;
+    var n=Math.floor(AU.ctx.sampleRate*d), b=AU.ctx.createBuffer(1,n,AU.ctx.sampleRate), ch=b.getChannelData(0);
+    for(var i=0;i<n;i++) ch[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);
+    var s=AU.ctx.createBufferSource(); s.buffer=b;
+    var bp=AU.ctx.createBiquadFilter(); bp.type='lowpass'; bp.frequency.value=f||1200;
+    var g=AU.ctx.createGain(); g.gain.value=v||.25;
+    s.connect(bp); bp.connect(g); g.connect(AU.master); s.start();
+  }catch(e){}
+}
+function sfx(n){
+  if(!AU.sfx||!AU.ctx) return; var t=AU.ctx.currentTime;
+  try{
+    if(n==='tap') tone(680,.08,'triangle',.16);
+    else if(n==='select'){ tone(900,.1,'triangle',.2); tone(1340,.08,'sine',.11,t+.05); }
+    else if(n==='roll') tone(230+Math.random()*110,.06,'sine',.08);
+    else if(n==='boom'){ noise(.45,.32,900); tone(125,.3,'sawtooth',.2); tone(68,.5,'sine',.24,t+.02); }
+    else if(n==='place') tone(540,.08,'sine',.15);
+    else if(n==='done'){ [523,659,784,1047].forEach(function(f,i){ tone(f,.25,'triangle',.19,t+i*.07); }); }
+    else if(n==='drink'){ [720,580,450,350].forEach(function(f,i){ tone(f,.16,'sine',.17,t+i*.06); }); noise(.3,.1,600); }
+    else if(n==='skill'){ [784,988,1175,1568].forEach(function(f,i){ tone(f,.32,'sine',.19,t+i*.09); }); }
+    else if(n==='turn'){ tone(450,.11,'triangle',.13); tone(670,.13,'triangle',.12,t+.09); }
+    else if(n==='bad') tone(190,.2,'sawtooth',.15);
+    else if(n==='win'){ [523,659,784,1047,1319].forEach(function(f,i){ tone(f,.5,'triangle',.21,t+i*.13); }); }
+  }catch(e){}
+}
+var CHORDS=[[220,277.18,329.63],[174.61,220,261.63],[196,246.94,311.13],[164.81,207.65,246.94]];
+var ARP=[0,1,2,1,2,0,1,2];
+function musicStep(i,when){
+  var ch=CHORDS[Math.floor(i/8)%CHORDS.length], s=i%8;
+  if(s===0) tone(ch[0]/2,.62,'sine',.3,when,AU.mg);
+  tone(ch[ARP[s]]*2,.33,'triangle',.1,when,AU.mg);
+  if(s===4) tone(ch[2]*4,.5,'sine',.05,when,AU.mg);
+  if(i%32===26) tone(1568,.7,'sine',.045,when,AU.mg);
+}
+function musicStart(){
+  try{
+    auInit(); if(!AU.ctx||AU.started) return;
+    AU.started=true; AU.step=0; AU.next=AU.ctx.currentTime+.1;
+    AU.mg.gain.cancelScheduledValues(AU.ctx.currentTime);
+    AU.mg.gain.setValueAtTime(.0001,AU.ctx.currentTime);
+    AU.mg.gain.exponentialRampToValueAtTime(AU.music?.55:.0001,AU.ctx.currentTime+1.5);
+    AU.timer=setInterval(function(){
+      if(!AU.ctx) return; var t=AU.ctx.currentTime, g=0;
+      while(AU.next<t+.35 && g++<24){ musicStep(AU.step,AU.next); AU.step=(AU.step+1)%32; AU.next+=.235; }
+    },110);
+  }catch(e){ showError('music',e); }
+}
+function musicToggle(on){
+  AU.music=on; auInit(); if(!AU.ctx) return;
+  if(on&&!AU.started){ musicStart(); return; }
+  if(AU.mg){ AU.mg.gain.cancelScheduledValues(AU.ctx.currentTime);
+    AU.mg.gain.setValueAtTime(Math.max(.0001,AU.mg.gain.value),AU.ctx.currentTime);
+    AU.mg.gain.exponentialRampToValueAtTime(on?.55:.0001,AU.ctx.currentTime+.5); }
+}
+function refreshAudioBtns(){
+  ['m-music','g-music'].forEach(function(i){ var b=$(i); if(b) b.classList.toggle('off',!AU.music); });
+  ['m-sfx','g-sfx'].forEach(function(i){ var b=$(i); if(b) b.classList.toggle('off',!AU.sfx); });
+}
+
+/* ---------------- LOG ---------------- */
+var LOGS=[];
+function log(msg){
+  try{
+    LOGS.push(msg); if(LOGS.length>60) LOGS.shift();
+    var l=$('logline'); if(l){ l.textContent=msg; l.classList.remove('flash'); void l.offsetWidth; l.classList.add('flash'); }
+  }catch(e){}
+}
+function openLog(){
+  var box=$('loglist'); clear(box);
+  for(var i=LOGS.length-1;i>=0;i--) box.appendChild(el('div',null,LOGS[i]));
+  if(!LOGS.length) box.appendChild(el('div',null,'ยังไม่มีประวัติการร่ายอาคมในพิธี'));
+  $('modal-log').classList.add('on');
+}
+
+/* ---------------- DISPENSER ENGINE ---------------- */
+var MID=1;
+function newDispenser(){
+  var bag=[],i,ci;
+  for(ci=0;ci<4;ci++) for(i=0;i<20;i++) bag.push({id:MID++,c:CLIST[ci]});
+  shuffle(bag);
+  var tracks=[[],[],[],[],[]];
+  for(var t=0;t<5;t++) for(i=0;i<TRACK_CAP;i++) tracks[t].push(bag.pop());
+  return {tracks:tracks,tank:bag};
+}
+function snapOf(D){
+  var s=[],t,i;
+  for(t=0;t<5;t++){ var a=[]; for(i=0;i<D.tracks[t].length;i++) a.push({id:D.tracks[t][i].id,c:D.tracks[t][i].c}); s.push(a); }
+  return s;
+}
+function explodeAt(D,ti,pos,ev,got){
+  var tr=D.tracks[ti],guard=0;
+  while(guard++<60 && pos>0 && pos<tr.length && tr[pos-1].c===tr[pos].c){
+    var col=tr[pos].c,a=pos-1,b=pos;
+    while(a-1>=0 && tr[a-1].c===col) a--;
+    while(b+1<tr.length && tr[b+1].c===col) b++;
+    var grp=tr.slice(a,b+1);
+    ev.push({type:'explode',ids:grp.map(function(m){return m.id;}),c:col,n:grp.length});
+    tr.splice(a,grp.length);
+    for(var i=0;i<grp.length;i++) got.push(grp[i]);
+    ev.push({type:'fall',snap:snapOf(D)});
+    pos=a;
+  }
+}
+function refill(D,ev,got,explo){
+  var dirty=false;
+  for(var t=0;t<5;t++){
+    var guard=0;
+    while(D.tracks[t].length<TRACK_CAP && D.tank.length>0 && guard++<200){
+      var m=D.tank.pop(); D.tracks[t].push(m); dirty=true;
+      if(explo){
+        var top=D.tracks[t].length-1;
+        if(top>0 && D.tracks[t][top-1].c===m.c){
+          ev.push({type:'fall',snap:snapOf(D)}); dirty=false;
+          explodeAt(D,t,top,ev,got);
+        }
+      }
+    }
+  }
+  if(dirty) ev.push({type:'fall',snap:snapOf(D)});
+}
+function removeIdx(D,ti,idxs,explo){
+  var ev=[],got=[],tr=D.tracks[ti];
+  var s=idxs.slice().sort(function(a,b){return b-a;});
+  var valid=[],i;
+  for(i=0;i<s.length;i++) if(s[i]>=0&&s[i]<tr.length) valid.push(s[i]);
+  if(!valid.length) return {ev:ev,got:got};
+  for(i=0;i<valid.length;i++){ got.push(tr[valid[i]]); tr.splice(valid[i],1); }
+  ev.push({type:'fall',snap:snapOf(D)});
+  if(explo) explodeAt(D,ti,valid[valid.length-1],ev,got);
+  refill(D,ev,got,explo);
+  return {ev:ev,got:got};
+}
+function discardIdx(D,ti,idxs){
+  var ev=[],got=[],tr=D.tracks[ti];
+  var s=idxs.slice().sort(function(a,b){return b-a;}),i;
+  for(i=0;i<s.length;i++){ if(s[i]>=0&&s[i]<tr.length){ D.tank.push(tr[s[i]]); tr.splice(s[i],1); } }
+  shuffle(D.tank);
+  ev.push({type:'fall',snap:snapOf(D)});
+  refill(D,ev,got,false);
+  return {ev:ev,got:got};
+}
+function selfTest(){
+  var fails = [];
+  function mk(arr){ var t=[]; for(var i=0;i<arr.length;i++) t.push({id:9000+i,c:arr[i]}); return t; }
+  function D(tr){ return {tracks:[tr,[],[],[],[]],tank:[]}; }
+  var d=D(mk(['R','Y','R','R'])); var r=removeIdx(d,0,[1],true);
+  if(r.got.length!==4) fails.push('T1 ได้ '+r.got.length+' (ควร 4)');
+  d=D(mk(['R','Y','B'])); r=removeIdx(d,0,[0],true);
+  if(r.got.length!==1) fails.push('T2 ได้ '+r.got.length+' (ควร 1)');
+  d=D(mk(['B','B','R','Y','R','B'])); r=removeIdx(d,0,[3],true);
+  if(r.got.length!==6) fails.push('T3 ได้ '+r.got.length+' (ควร 6)');
+  d=D(mk(['Y','R','Y','Y','Y'])); r=removeIdx(d,0,[1],true);
+  if(r.got.length!==5) fails.push('T4 ได้ '+r.got.length+' (ควร 5)');
+  d=D(mk(['R','Y','R','R'])); r=removeIdx(d,0,[1],false);
+  if(r.got.length!==1) fails.push('T5 ได้ '+r.got.length+' (ควร 1)');
+  d=D(mk(['R','B','Y'])); r=removeIdx(d,0,[2],true);
+  if(r.got.length!==1) fails.push('T6 ได้ '+r.got.length+' (ควร 1)');
+  if(fails.length) showError('self-test',new Error(fails.join(' | ')));
+  else if(window.console&&console.log) console.log('✅ engine self-test ผ่านเรียบร้อย');
+}
+
+/* ---------------- CORE STATE ---------------- */
+var S=null;
+var UI={mode:'solo',myIdx:0,isHost:true,sel:-1,animating:false,localModal:false,lastCfg:null};
+var MEL={}, trackEls=[], pcEls=[], stkEls=[], bwEls=[];
+
+function mkTile(k){ var f=[],i; for(i=0;i<POTIONS[k].recipe.length;i++) f.push(null); return {k:k,fill:f}; }
+function mkPlayer(i,name,isBot,level){
+  return {i:i,name:name,av:AVATARS[i],isBot:!!isBot,level:level||'normal',dc:false,
+          brew:[null,null],pool:[],done:[],skill:0,help:0,
+          skillSame:{},skillDiff:false,lastDrunk:null,drunkList:[]};
+}
+function startGame(cfg){
+  try{
+    UI.lastCfg=clone(cfg);
+    var n=cfg.players.length, i, k, j;
+    LOGS=[];
+    S={mode:cfg.mode,n:n,players:cfg.players.map(function(p,idx){return mkPlayer(idx,p.name,p.isBot,p.level);}),
+       cur:0,first:0,phase:'draft',disp:newDispenser(),tankCount:0,
+       stacks:[[],[],[],[],[]],typeStacks:null,
+       skillCountdown:(SKILL_COUNTDOWN[n]||4),skillPool:SKILL_TOTAL-(SKILL_COUNTDOWN[n]||4),
+       helpLeft:21,endTrig:false,pend:null,turn:{took:false,helped:false},
+       draft:{i:0,n:0},room:cfg.room||'',tieWinner:null};
+    S.first=Math.floor(Math.random()*n); S.cur=S.first; S.draft.i=S.first;
+    var ts=[]; for(k=0;k<8;k++){ var a=[]; for(j=0;j<8;j++) a.push(k); ts.push(a); }
+    S.typeStacks=ts;
+    S.pend={k:'draft'};
+    MEL={}; for(i=0;i<trackEls.length;i++){ var tr=trackEls[i]; var ll=tr.querySelector('.lockline'); clear(tr); if(ll) tr.appendChild(ll); }
+    showScreen('sc-game');
+    $('players').className='players p'+n;
+    for(i=0;i<4;i++) pcEls[i].classList.toggle('on',i<n);
+    $('room-chip').classList.toggle('on',S.mode==='online');
+    $('room-code-live').textContent=S.room||'-----';
+    log('🔔 ผู้พิทักษ์คนแรกที่เริ่มทำพิธีคือ '+S.players[S.first].name);
+    fitBoard(); applySnap(snapOf(S.disp));
+    render(); broadcast(); autoPilot();
+  }catch(e){ showError('startGame',e); }
+}
+function finishDraft(){
+  var rest=[],k,j;
+  for(k=0;k<8;k++) for(j=0;j<S.typeStacks[k].length;j++) rest.push(k);
+  shuffle(rest);
+  S.stacks=[[],[],[],[],[]];
+  for(var i=0;i<rest.length;i++) S.stacks[i%5].push(rest[i]);
+  S.typeStacks=null; S.phase='play'; S.cur=S.first; S.pend=null;
+  log('📋 ปล่อยม้วนคาถาลงสู่กองกลางเรียบร้อย — เริ่มรอบพิธี!');
+  beginTurn();
+}
+function beginTurn(){
+  S.turn={took:false,helped:false}; S.pend=null; UI.sel=-1;
+  sfx('turn'); log('▶ รอบพิธีของผู้พิทักษ์ '+S.players[S.cur].name);
+  render(); broadcast(); autoPilot();
+}
+function autoPilot(){
+  if(!S||S.phase==='over') return;
+  if(UI.mode==='online'&&!UI.isHost) return;
+  var who=(S.phase==='draft')?S.draft.i:S.cur, p=S.players[who];
+  if(!p) return;
+  if(p.isBot||p.dc) setTimeout(function(){ botAct(who); },600);
+}
+
+/* ---------------- BOARD RENDER ---------------- */
+function applySnap(snap){
+  try{
+    var seen={},t,i;
+    for(t=0;t<5;t++){
+      var col=trackEls[t]; if(!col) continue;
+      for(i=0;i<snap[t].length;i++){
+        var m=snap[t][i]; seen[m.id]=1;
+        var e=MEL[m.id];
+        if(!e){
+          e=el('div','marble c'+m.c); e.dataset.id=m.id;
+          e.style.setProperty('--i',TRACK_CAP+0.7); e.classList.add('newin');
+          col.appendChild(e); MEL[m.id]=e; void e.offsetWidth; e.classList.remove('newin');
+        }
+        if(e.parentNode!==col) col.appendChild(e);
+        e.style.setProperty('--i',i);
+        e.dataset.track=t; e.dataset.idx=i;
+        e.classList.toggle('locked',i>=LOCK_IDX);
+      }
+    }
+    for(var id in MEL){
+      if(!seen[id]){
+        (function(x){ x.classList.add('gone'); setTimeout(function(){ if(x.parentNode) x.parentNode.removeChild(x); },300); })(MEL[id]);
+        delete MEL[id];
+      }
+    }
+  }catch(e){ showError('applySnap',e); }
+}
+async function playEvents(ev){
+  if(!ev||!ev.length) return;
+  UI.animating=true;
+  try{
+    for(var i=0;i<ev.length;i++){
+      var e=ev[i];
+      if(e.type==='explode'){
+        await sleep(150);
+        for(var j=0;j<e.ids.length;j++){ var m=MEL[e.ids[j]]; if(m) m.classList.add('boom'); }
+        var fw=$('flashwrap'); if(fw){ fw.classList.remove('on'); void fw.offsetWidth; fw.classList.add('on'); }
+        sfx('boom');
+        if(S) react(S.cur, e.n>=4?'🤯':'💥');
+        await sleep(380);
+      }else{
+        applySnap(e.snap); if(i%2===0) sfx('roll');
+        await sleep(165);
+      }
+    }
+  }catch(err){ showError('playEvents',err); }
+  UI.animating=false;
+  render();
+}
+function fitBoard(){
+  try{
+    var st=$('stage'); if(!st) return;
+    var w=st.clientWidth, h=st.clientHeight;
+    if(!w||!h) return;
+    var sh=$('stacks')?$('stacks').offsetHeight:44;
+    var avail=h-sh-40;
+    var cw=Math.floor((Math.min(w,480)-40)/5)-5;
+    var ch=Math.floor(avail/9);
+    var cell=Math.max(13,Math.min(34,Math.min(cw,ch)));
+    document.documentElement.style.setProperty('--cell',cell+'px');
+  }catch(e){}
+}
+
+/* ---------------- ACTIONS & FLOWS ---------------- */
+function dispatch(a){
+  try{
+    if(!S) return;
+    if(UI.mode==='online'&&!UI.isHost){ netSend({t:'action',a:a}); return; }
+    var by=(UI.mode==='online')?UI.myIdx:((S.phase==='draft')?S.draft.i:S.cur);
+    applyAction(a,by);
+  }catch(e){ showError('dispatch',e); }
+}
+async function applyAction(a,by){
+  try{
+    if(!S||S.phase==='over'||!a) return;
+    if(S.phase==='draft'){
+      if(by!==S.draft.i) return;
+      if(a.t==='draftPick') doDraftPick(a.k);
+      render(); broadcast(); return;
+    }
+    if(by!==S.cur) return;
+    var p=S.players[S.cur];
+    if(a.t==='take') await doTake(a.track,a.idx);
+    else if(a.t==='help') doAskHelp();
+    else if(a.t==='place') doPlace(a.mi,a.b,a.s);
+    else if(a.t==='drink') doDrink(a.di);
+    else if(a.t==='target') await doTarget(a);
+    else if(a.t==='pendDone') pendFinish();
+    else if(a.t==='cancel') doCancel();
+    else if(a.t==='auto') doAutoPlace(p,true);
+    else if(a.t==='end') doEndTurn();
+    render(); broadcast(); autoPilot();
+  }catch(e){
+    showError('action:'+(a&&a.t),e);
+    try{ if(S){ S.pend=null; UI.animating=false; render(); } }catch(x){}
+  }
+}
+function doDraftPick(k){
+  if(k==null||k<0||k>7) return;
+  if(!S.typeStacks[k]||!S.typeStacks[k].length){ log('ม้วนคาถาชนิดนี้หมดแล้ว'); sfx('bad'); return; }
+  var p=S.players[S.draft.i];
+  var slot=p.brew[0]?1:0;
+  if(p.brew[0]&&p.brew[1]) return;
+  S.typeStacks[k].pop(); p.brew[slot]=mkTile(k); sfx('place');
+  log('📋 '+p.name+' อัญเชิญจารึกคาถาเริ่มต้น: '+POTIONS[k].th);
+  S.draft.n++;
+  if(S.draft.n>=2){
+    S.draft.n=0; S.draft.i=(S.draft.i+1)%S.n;
+    if(S.draft.i===S.first){ finishDraft(); return; }
+  }
+  autoPilot();
+}
+function addGot(p,got){ for(var i=0;i<got.length;i++) p.pool.push({c:got[i].c,w:false}); }
+async function doTake(ti,idx){
+  if(S.turn.took){ log('⚠️ เจ้าปลุกพลังหยิบในรอบนี้ไปแล้ว'); sfx('bad'); return; }
+  if(idx>=LOCK_IDX){ log('⚠️ แถวที่ 9 อยู่เหนือขอบเขตพิธี หยิบไม่ได้'); sfx('bad'); return; }
+  var tr=S.disp.tracks[ti]; if(!tr||idx<0||idx>=tr.length) return;
+  var e=MEL[tr[idx].id]; if(e) e.classList.add('chosen');
+  sfx('select'); await sleep(190); if(e) e.classList.remove('chosen');
+  var r=removeIdx(S.disp,ti,[idx],true);
+  S.turn.took=true;
+  var p=S.players[S.cur]; addGot(p,r.got);
+  if(UI.mode==='online'&&UI.isHost){ S.tankCount=S.disp.tank.length; broadcast(r.ev); }
+  await playEvents(r.ev);
+  log('🫳 '+p.name+' เก็บอัญมณีพลังธาตุได้ '+r.got.length+' ลูก'+(r.got.length>1?' 💥 ปะทะพลังระเบิด!':''));
+  if(r.got.length>=4) react(S.cur,'🤩');
+  render();
+}
+function doAskHelp(){
+  if(S.turn.helped){ log('⚠️ รอบนี้เจ้าขอความช่วยเหลือไปแล้ว'); sfx('bad'); return; }
+  if(S.helpLeft<=0){ log('⚠️ ตราเวทช่วยเหลือของอาจารย์พิทักษ์หมดสิ้น'); sfx('bad'); return; }
+  if(S.pend){ log('⚠️ เคลียร์ภาระพลังงานเวทตกค้างด้านล่างก่อน'); sfx('bad'); return; }
+  S.pend={k:'marbleOne',src:'help'};
+  log('🆘 โปรดระบุแก้วอัญมณี 1 ลูก (จะหยิบแบบไม่ระเบิด)');
+}
+function canPlace(p,mi,b,s){
+  var tile=p.brew[b]; if(!tile) return false;
+  var rc=POTIONS[tile.k].recipe;
+  if(s<0||s>=rc.length) return false;
+  if(tile.fill[s]) return false;
+  var m=p.pool[mi]; if(!m) return false;
+  return !!m.w || m.c===rc[s];
+}
+function doPlace(mi,b,s){
+  var p=S.players[S.cur];
+  if(mi==null||mi<0||mi>=p.pool.length) return;
+  var tile=p.brew[b];
+  if(!tile){ log('⚠️ แท่นศิลานี้ยังไม่มีม้วนคาถา'); sfx('bad'); return; }
+  if(tile.fill[s]){ log('⚠️ ช่องสลักนี้เต็มเปี่ยมแล้ว'); sfx('bad'); return; }
+  if(!canPlace(p,mi,b,s)){ log('⚠️ ธาตุปะทะไม่ได้ ต้องสลักด้วย '+CNAME[POTIONS[tile.k].recipe[s]]); sfx('bad'); return; }
+  tile.fill[s]=POTIONS[tile.k].recipe[s];
+  p.pool.splice(mi,1); UI.sel=-1; sfx('place');
+  checkComplete(p,b);
+}
+function checkComplete(p,b){
+  var tile=p.brew[b]; if(!tile) return;
+  for(var i=0;i<tile.fill.length;i++) if(!tile.fill[i]) return;
+  var P=POTIONS[tile.k];
+  p.brew[b]=null; p.done.push({k:tile.k,drunk:false});
+  sfx('done'); react(p.i,'🎉');
+  log('✨ '+p.name+' สลักวิหารคาถา '+P.th+' สำเร็จ! ได้รับ +'+P.val+' พลังเวท');
+  checkSkills(p);
+}
+function checkSkills(p){
+  var cnt={},i,k;
+  for(i=0;i<p.done.length;i++) cnt[p.done[i].k]=(cnt[p.done[i].k]||0)+1;
+  for(k in cnt){ if(cnt[k]>=3 && !p.skillSame[k]){ p.skillSame[k]=true; awardSkill(p,'สลักคาถาประเภท '+POTIONS[k].th+' ครบ 3 ม้วน'); } }
+  var kinds=0; for(k in cnt) kinds++;
+  if(kinds>=5 && !p.skillDiff){ p.skillDiff=true; awardSkill(p,'สลักคาถาต่างประเภทครบ 5 ประเภท'); }
+}
+function awardSkill(p,why){
+  if(S.skillCountdown>0){
+    S.skillCountdown--; p.skill++;
+    if(S.skillCountdown===0) triggerEnd('กองเหรียญตราเกียรติยศนับถอยหลังหมดลงแล้ว');
+  } else if(S.skillPool>0){ S.skillPool--; p.skill++; }
+  else { log('⭐ ตราเกียรติยศวิหารมังกรกองกลางหมดสิ้น'); return; }
+  sfx('skill'); react(p.i,'⭐');
+  log('⭐ '+p.name+' ได้รับตราเกียรติยศแห่งผู้พิทักษ์! ('+why+') +4 คะแนน');
+}
+function triggerEnd(why){
+  if(S.endTrig) return;
+  S.endTrig=true;
+  log('🔔 บัญญัติโบราณทำงาน ('+why+') — จะทำพิธีต่ออีกรอบสุดท้าย');
+  react(S.cur,'😱');
+}
+function doAutoPlace(p,verbose){
+  var moved=0,guard=0;
+  while(guard++<40){
+    var did=false;
+    for(var mi=0;mi<p.pool.length&&!did;mi++){
+      var best=null;
+      for(var b=0;b<2;b++){
+        var tile=p.brew[b]; if(!tile) continue;
+        var rc=POTIONS[tile.k].recipe;
+        for(var s=0;s<rc.length;s++){
+          if(canPlace(p,mi,b,s)){
+            var need=0; for(var q=0;q<tile.fill.length;q++) if(!tile.fill[q]) need++;
+            var pri=need*10-POTIONS[tile.k].val;
+            if(!best||pri<best.pri) best={b:b,s:s,pri:pri};
+          }
+        }
+      }
+      if(best){ doPlace(mi,best.b,best.s); moved++; did=true; }
+    }
+    if(!did) break;
+  }
+  if(verbose&&!moved) log('ℹ️ ไม่มีแก้วพลังธาตุใดในคลังที่ตรงรอยสลักคาถาในตอนนี้');
+  return moved;
+}
+function doDrink(di){
+  var p=S.players[S.cur], d=p.done[di];
+  if(!d) return;
+  if(d.drunk){ log('⚠️ โอสถขวดนี้ปลดปล่อยเวทไปหมดสิ้นแล้ว'); sfx('bad'); return; }
+  if(S.pend){ log('⚠️ โปรดชำระพลังคั่งค้างบนแท่นพิธีด้านล่างก่อน'); sfx('bad'); return; }
+  var P=POTIONS[d.k];
+  if(d.k===5 && p.lastDrunk==null){ log('⚠️ เจ้ายังไม่เคยดื่มโอสถศักดิ์สิทธิ์ขวดอื่นเลย ไม่อาจใช้พลังทรายไร้กาลเวลาได้'); sfx('bad'); return; }
+  if(!powerUsable(p,d.k===5?p.lastDrunk:d.k)){ log('⚠️ ตอนนี้สภาวะสนามพลังวิหารไม่เหมาะแก่การสำแดงเวทขวดนี้'); sfx('bad'); return; }
+  d.drunk=true; sfx('drink'); react(p.i,'🥤');
+  var eff=d.k;
+  if(d.k===5){ eff=p.lastDrunk; log('⏳ '+p.name+' ร่ายทรายไร้กาลเวลา → ยืมพลังเวท '+POTIONS[eff].th+' อีกครั้ง'); }
+  else log('🥤 '+p.name+' ปลดปล่อยโอสถเวท '+P.th+' — '+P.pw);
+  if(d.k!==5){ p.lastDrunk=d.k; }
+  p.drunkList.push(d.k);
+  startPower(eff);
+}
+function powerUsable(p,k){
+  if(k==null) return false;
+  if(k===1){
+    for(var i=0;i<S.n;i++){
+      if(i===p.i) continue;
+      var v=S.players[i];
+      for(var b=0;b<2;b++){ var t=v.brew[b]; if(!t) continue;
+        for(var s=0;s<t.fill.length;s++) if(t.fill[s]) return true; }
+    }
+    return false;
+  }
+  if(k===3) return p.pool.length>0;
+  return true;
+}
+function startPower(k){
+  var p=S.players[S.cur];
+  if(k===0) S.pend={k:'marbleOne',src:'potion'};
+  else if(k===1) S.pend={k:'steal'};
+  else if(k===2) S.pend={k:'adjDiff',step:1,t1:null,i1:null};
+  else if(k===3){ for(var i=0;i<p.pool.length;i++) p.pool[i].w=true; S.pend=null; log('🌈 แก้วอัญมณีในคลังวิเศษทั้งหมดสลักได้ทุกช่องธาตุ!'); }
+  else if(k===4) S.pend={k:'abyss',taken:{},count:0};
+  else if(k===6) S.pend={k:'run'};
+  else if(k===7) S.pend={k:'discard'};
+  else S.pend=null;
+}
+function pendFinish(){
+  if(!S.pend) return;
+  if(S.pend.k==='abyss'){ log('🌀 ปิดพิธีกระแสลึกอเวจีกลืนฟ้า ได้แก้วมังกร '+S.pend.count+' ลูก'); S.pend=null; return; }
+  S.pend=null;
+}
+function doCancel(){
+  if(!S.pend){ return; }
+  if(S.pend.k==='chooseTile'){ log('⚠️ ต้องเลือกม้วนคาถามาประดับแท่นปรุงก่อน'); sfx('bad'); return; }
+  if(S.pend.k==='abyss'){ pendFinish(); return; }
+  if(S.pend.step===2){ log('ℹ️ ยกเลิกการระบุเป้าหมายตัวแรก'); S.pend.step=1; S.pend.t1=null; S.pend.i1=null; return; }
+  S.pend=null; UI.sel=-1; log('ℹ️ ยกเลิกการร่ายเวทมนตร์');
+}
+async function doTarget(a){
+  var pd=S.pend; if(!pd) return;
+  var p=S.players[S.cur],i;
+  if(pd.k==='marbleOne'&&a.kind==='marble'){
+    if(!validIdx(a.track,a.idx)) return;
+    if(pd.src==='help'){ S.helpLeft--; p.help++; S.turn.helped=true; log('🆘 '+p.name+' ยอมรับเบี้ยบาปจากผู้พิทักษ์เพื่อหยิบวิเศษ (−2 คะแนน)'); }
+    S.pend=null;
+    await pull(a.track,[a.idx]);
+  }
+  else if(pd.k==='adjDiff'&&a.kind==='marble'){
+    if(!validIdx(a.track,a.idx)) return;
+    if(pd.step===1){ pd.t1=a.track; pd.i1=a.idx; pd.step=2; log('🧲 โปรดเลือกลูกมังกรเป้าหมายที่สองที่อยู่ติดกัน (ต้องคนละสี)'); render(); return; }
+    if(a.track!==pd.t1||Math.abs(a.idx-pd.i1)!==1){ log('⚠️ พลังเชื่อมไม่สำเร็จ ต้องเลือกช่องที่อยู่ติดกันในราง'); sfx('bad'); return; }
+    if(S.disp.tracks[a.track][a.idx].c===S.disp.tracks[pd.t1][pd.i1].c){ log('⚠️ พลังสะท้อนล้มเหลว ห้ามเลือกสีเหมือนกัน'); sfx('bad'); return; }
+    var t1=pd.t1,i1=pd.i1; S.pend=null;
+    await pull(t1,[i1,a.idx]);
+  }
+  else if(pd.k==='run'&&a.kind==='marble'){
+    if(!validIdx(a.track,a.idx)) return;
+    var tr=S.disp.tracks[a.track],col=tr[a.idx].c,lo=a.idx,hi=a.idx;
+    while(lo-1>=0&&tr[lo-1].c===col) lo--;
+    while(hi+1<tr.length&&tr[hi+1].c===col&&hi+1<LOCK_IDX) hi++;
+    if(hi-lo+1<2){ log('⚠️ พลังละลายไม่ทำงาน ต้องมีสีเดียวกันเรียงติดกันอย่างน้อย 2 ลูก'); sfx('bad'); return; }
+    var list=[]; for(i=lo;i<=hi;i++) list.push(i);
+    S.pend=null;
+    log('🍯 ดึงธาตุเชื่อมเหนียวแน่นสี '+CSHORT[col]+' ติดกัน '+list.length+' ลูก');
+    await pull(a.track,list);
+  }
+  else if(pd.k==='abyss'&&a.kind==='marble'){
+    if(a.idx!==0){ log('⚠️ หยิบได้จากปากรางด้านล่างสุดเท่านั้น'); sfx('bad'); return; }
+    if(!validIdx(a.track,a.idx)) return;
+    var c=S.disp.tracks[a.track][0].c;
+    if(pd.taken[c]){ log('⚠️ ธาตุ '+CSHORT[c]+' ถูกอัญเชิญด้วยกระแสลึกรอบนี้ไปแล้ว (จำกัดสีละ 1 ลูก)'); sfx('bad'); return; }
+    pd.taken[c]=1; pd.count++;
+    var done=(pd.count>=4);
+    await pull(a.track,[0]);
+    if(done){ log('🌀 ดึงครบถ้วนทั้ง 4 มหาอัญมณีเวทมนตร์'); S.pend=null; }
+    else if(S.pend) S.pend.taken=pd.taken;
+  }
+  else if(pd.k==='discard'&&a.kind==='marble'){
+    if(!validIdx(a.track,a.idx)) return;
+    var trk=S.disp.tracks[a.track],cc=trk[a.idx].c,idxs=[];
+    for(i=0;i<trk.length&&i<LOCK_IDX;i++){ if(trk[i].c===cc&&idxs.length<5) idxs.push(i); }
+    S.pend=null;
+    var rr=discardIdx(S.disp,a.track,idxs);
+    S.tankCount=S.disp.tank.length;
+    sfx('select'); log('🌋 ผลักทำลายธาตุ '+CNAME[cc]+' จำนวน '+idxs.length+' ลูก กลับสู่กองเก็บวิหาร');
+    if(UI.mode==='online'&&UI.isHost) broadcast(rr.ev);
+    await playEvents(rr.ev);
+  }
+  else if(pd.k==='steal'&&a.kind==='steal'){
+    var vic=S.players[a.p];
+    if(!vic||vic===p) return;
+    var tl=vic.brew[a.b];
+    if(!tl||!tl.fill[a.s]){ log('⚠️ ข้อมูลสลักพลังคลาดเคลื่อน'); sfx('bad'); return; }
+    var col2=tl.fill[a.s]; tl.fill[a.s]=null;
+    p.pool.push({c:col2,w:false});
+    sfx('select'); react(a.p,'😱');
+    log('💘 '+p.name+' ใช้อาคมแทรกซึม ขโมยธาตุ '+CNAME[col2]+' จากม้วนคาถาของ '+vic.name);
+    S.pend=null;
+  }
+  else if(pd.k==='chooseTile'&&a.kind==='stack'){
+    var st=S.stacks[a.si];
+    if(!st||!st.length){ log('⚠️ แท่นวางกองนี้ว่างเปล่าไร้ม้วนพลังงาน'); sfx('bad'); return; }
+    var k=st.pop();
+    p.brew[pd.slot]=mkTile(k); sfx('place');
+    log('📋 '+p.name+' ได้รับม้วนคาถาโบราณ: '+POTIONS[k].th);
+    if(st.length===0) triggerEnd('กองม้วนคาถากองกลางเวทมอดดับไป 1 กอง');
+    S.pend=null; refillBrew();
+  }
+}
+function validIdx(t,i){
+  if(t==null||i==null) return false;
+  var tr=S.disp.tracks[t];
+  if(!tr||i<0||i>=tr.length) return false;
+  if(i>=LOCK_IDX){ log('⚠️ พลังขังขอบรางที่ 9 ไม่อนุญาตให้หยิบ'); sfx('bad'); return false; }
+  return true;
+}
+async function pull(ti,idxs){
+  var p=S.players[S.cur],i;
+  for(i=0;i<idxs.length;i++){ var m=S.disp.tracks[ti][idxs[i]]; if(m&&MEL[m.id]) MEL[m.id].classList.add('chosen'); }
+  sfx('select'); await sleep(170);
+  var r=removeIdx(S.disp,ti,idxs,false);
+  addGot(p,r.got); S.tankCount=S.disp.tank.length;
+  if(UI.mode==='online'&&UI.isHost) broadcast(r.ev);
+  await playEvents(r.ev);
+  render();
+}
+function doEndTurn(){
+  var p=S.players[S.cur];
+  if(!S.turn.took&&hasAnyMarble()){ log('⚠️ เจ้าต้องเชื่อมหยิบแก้วมังกรเป็นหัวใจพิธีกรรมอย่างน้อย 1 ลูกเสมอ'); sfx('bad'); return; }
+  if(S.pend){ log('⚠️ กรุณาร่ายเวทที่ยังค้างคาให้เรียบร้อยก่อนข้ามพิธี'); sfx('bad'); return; }
+  var lost=0;
+  while(p.pool.length>POOL_MAX){ var m=p.pool.pop(); S.disp.tank.push({id:MID++,c:m.c}); lost++; }
+  if(lost){ shuffle(S.disp.tank); log('🫙 คลังเวทเกินขีดจำกัด 3 — สลายธาตุคืนแท่นวิหาร '+lost+' ลูก'); }
+  for(var i=0;i<p.pool.length;i++) p.pool[i].w=false;
+  S.tankCount=S.disp.tank.length;
+  refillBrew();
+}
+function refillBrew(){
+  var p=S.players[S.cur],empty=-1,i;
+  for(i=0;i<2;i++) if(!p.brew[i]){ empty=i; break; }
+  var avail=false;
+  for(i=0;i<5;i++) if(S.stacks[i].length) avail=true;
+  if(empty>=0&&avail){ S.pend={k:'chooseTile',slot:empty}; render(); broadcast(); autoPilot(); return; }
+  finishTurn();
+}
+function hasAnyMarble(){ for(var t=0;t<5;t++) if(S.disp.tracks[t].length>0) return true; return false; }
+function finishTurn(){
+  var nxt=(S.cur+1)%S.n;
+  if(S.endTrig&&nxt===S.first){ gameOver(); return; }
+  if(!hasAnyMarble()&&S.disp.tank.length===0){ log('🫙 ขุมพลังงานมหาอัญมณีเวทมนตร์เหือดแห้งไปแล้ว!'); gameOver(); return; }
+  S.cur=nxt; beginTurn();
+}
+function potionPts(p){ var v=0; for(var i=0;i<p.done.length;i++) v+=POTIONS[p.done[i].k].val; return v; }
+function scoreOf(p){ return potionPts(p)+p.skill*4-p.help*2; }
+async function gameOver(){
+  S.phase='over'; S.pend=null; render(); broadcast();
+  sfx('win'); log('🏁 จบพิธีกรรมศึกลูกแก้วมังกรผู้พิทักษ์!');
+  var best=-999,i;
+  for(i=0;i<S.n;i++) best=Math.max(best,scoreOf(S.players[i]));
+  var tied=[]; for(i=0;i<S.n;i++) if(scoreOf(S.players[i])===best) tied.push(S.players[i]);
+  var note='';
+  if(tied.length>1){
+    note='ผู้พิทักษ์เสมอกัน '+tied.length+' ท่าน → ตัดสินตามธรรมเนียมโบราณด้วยแต้มหยิบแก้วพิสูจน์ธาตุ: ';
+    var res=[];
+    for(i=0;i<tied.length;i++){
+      var pick=botBestPick(tied[i],'normal'), got=0;
+      if(pick){ var r=removeIdx(S.disp,pick.t,pick.i,true); got=r.got.length; await playEvents(r.ev); }
+      res.push({p:tied[i],g:got}); note+=tied[i].name+'='+got+' ';
+    }
+    res.sort(function(a,b){ return b.g-a.g; });
+    S.tieWinner=res[0].p.i;
+  }
+  showResult(note); broadcast();
+}
+function showResult(note){
+  try{
+    var body=$('r-body'); clear(body);
+    var arr=S.players.slice().sort(function(a,b){
+      var d=scoreOf(b)-scoreOf(a); if(d!==0) return d;
+      if(S.tieWinner!=null){ if(a.i===S.tieWinner) return -1; if(b.i===S.tieWinner) return 1; }
+      return 0;
+    });
+    for(var i=0;i<arr.length;i++){
+      var p=arr[i],tr=el('tr'); if(i===0) tr.className='win';
+      var cells=[(i===0?'🏆ราชัน: ':'')+p.av+' '+p.name,String(potionPts(p)),String(p.skill*4),String(-p.help*2),String(scoreOf(p))];
+      for(var j=0;j<cells.length;j++) tr.appendChild(el('td',null,cells[j]));
+      body.appendChild(tr);
+    }
+    $('r-win').textContent='🏆 ยินดีต้อนรับ มหาราชัน '+arr[0].av+' '+arr[0].name+' ผงาดขึ้นครองวิหารด้วย '+scoreOf(arr[0])+' พลังมนตรา!';
+    $('r-note').textContent=note||'';
+    showScreen('sc-result');
+  }catch(e){ showError('showResult',e); }
+}
+
+/* ---------------- PREMIUM INTERACTION GRAPHICS ---------------- */
+function iCanAct(){
+  if(!S||S.phase==='over'||UI.animating) return false;
+  var who=(S.phase==='draft')?S.draft.i:S.cur;
+  if(!S.players[who]) return false;
+  if(UI.mode==='online') return who===UI.myIdx&&!S.players[who].isBot&&!S.players[who].dc;
+  return !S.players[who].isBot;
+}
+function viewPlayer(){
+  if(!S) return null;
+  if(UI.mode==='online') return S.players[UI.myIdx]||S.players[0];
+  return S.players[(S.phase==='draft')?S.draft.i:S.cur];
+}
+function render(){
+  if(!S) return;
+  try{ renderTop(); }catch(e){ showError('renderTop',e); }
+  try{ if(!UI.animating) applySnap(snapOf(S.disp)); }catch(e){ showError('renderDisp',e); }
+  try{ renderPickable(); }catch(e){ showError('renderPick',e); }
+  try{ renderPlayers(); }catch(e){ showError('renderPlayers',e); }
+  try{ renderStacks(); }catch(e){ showError('renderStacks',e); }
+  try{ renderLab(); }catch(e){ showError('renderLab',e); }
+  try{ renderActions(); }catch(e){ showError('renderActions',e); }
+  try{ renderPend(); }catch(e){ showError('renderPend',e); }
+}
+function renderTop(){
+  var who=(S.phase==='draft')?S.draft.i:S.cur, p=S.players[who];
+  $('turn-av').textContent=p.av;
+  $('turn-nm').textContent=p.name+(p.isBot?' 🤖ผู้คุ้มกัน':'')+(p.dc?' (สัญญาสลาย)':'');
+  var ph='';
+  if(S.phase==='draft') ph='เลือกม้วนคาถาเบื้องต้น '+(S.draft.n+1)+'/2';
+  else if(S.phase==='over') ph='เกมสิ้นสุดสงครามพลังธาตุ';
+  else if(S.pend) ph=pendText();
+  else if(!S.turn.took) ph='โปรดอัญเชิญเชื่อมแก้วธาตุ 1 ลูก';
+  else ph='สลักแก้ว / ปลดปล่อยศักดิ์สิทธิ์ / สิ้นเทิร์น';
+  $('turn-ph').textContent=ph;
+  var tc=(S.disp&&S.disp.tank&&S.disp.tank.length)?S.disp.tank.length:(S.tankCount||0);
+  $('tank-count').textContent=tc;
+  $('skill-left').textContent=S.skillCountdown;
+  $('skill-pool').textContent=S.skillPool;
+  $('help-left').textContent=S.helpLeft;
+}
+function renderPickable(){
+  var canTake=iCanAct()&&S.phase==='play'&&((!S.turn.took&&!S.pend)||(S.pend&&isMarblePend(S.pend.k)));
+  var abyss=S.pend&&S.pend.k==='abyss';
+  for(var id in MEL){
+    var e=MEL[id], idx=parseInt(e.dataset.idx,10);
+    var ok=canTake&&idx<LOCK_IDX&&(!abyss||idx===0);
+    e.classList.toggle('pick',!!ok);
+    e.classList.toggle('hl',!!(ok&&S.pend));
+  }
+}
+function isMarblePend(k){ return k==='marbleOne'||k==='adjDiff'||k==='run'||k==='abyss'||k==='discard'; }
+function renderPlayers(){
+  for(var i=0;i<S.n;i++){
+    var p=S.players[i],c=pcEls[i];
+    c.classList.toggle('cur',i===((S.phase==='draft')?S.draft.i:S.cur));
+    c.classList.toggle('dc',!!p.dc);
+    c.querySelector('.avx').textContent=p.av;
+    c.querySelector('.nm').textContent=(i===S.first?'👑':'')+p.name+(p.isBot?'🤖':'');
+    c.querySelector('.sc').textContent=scoreOf(p);
+    var bt='';
+    for(var b=0;b<2;b++){
+      var t=p.brew[b];
+      if(t){ var f=0; for(var q=0;q<t.fill.length;q++) if(t.fill[q]) f++;
+        bt+=POTIONS[t.k].icon+f+'/'+t.fill.length+' '; }
+    }
+    c.querySelector('.l2').textContent='📜'+p.done.length+' ⭐'+p.skill+' 🆘'+p.help+' '+bt;
+  }
+}
+function renderStacks(){
+  var pend=S.pend&&S.pend.k==='chooseTile'&&iCanAct();
+  for(var s=0;s<5;s++){
+    var e=stkEls[s],st=S.stacks[s]||[];
+    var k=st.length?st[st.length-1]:null;
+    e.querySelector('.ic').textContent=(k!=null)?POTIONS[k].icon:'∅';
+    e.querySelector('.nmx').textContent=(k!=null)?POTIONS[k].th:'ว่างเปล่า';
+    e.querySelector('.vl').textContent=(k!=null?POTIONS[k].val+'★ ':'')+'×'+st.length;
+    e.classList.toggle('empty',st.length===0);
+    e.classList.toggle('sel',!!(pend&&st.length>0));
+  }
+}
+function renderLab(){
+  var p=viewPlayer(); if(!p) return;
+  var mine=(UI.mode==='online')||(p===S.players[S.cur]);
+  $('lab-owner').textContent='วิหารศิลาของ '+p.av+p.name+(p.pool.length>POOL_MAX?' ⚠️ อัญมณีคั่งค้างล้นคลัง':'');
+  var slots=$('pool').children, show=Math.max(POOL_MAX,p.pool.length),i;
+  for(i=0;i<slots.length;i++){
+    var sl=slots[i];
+    sl.classList.toggle('on',i<show);
+    sl.classList.toggle('over',i>=POOL_MAX);
+    clear(sl);
+    if(i<p.pool.length){
+      var m=el('i','pm c'+p.pool[i].c+(p.pool[i].w?' wild':''));
+      if(UI.sel===i) m.classList.add('sel');
+      m.dataset.mi=i; sl.appendChild(m);
+    }
+  }
+  for(var b=0;b<2;b++){
+    var card=bwEls[b],tile=p.brew[b],ss=card.querySelectorAll('.slot');
+    if(!tile){
+      card.classList.add('empty');
+      card.querySelector('.ic').textContent='⬜';
+      card.querySelector('.nm').textContent='แท่นศิลาว่าง';
+      card.querySelector('.vl').textContent='-';
+      for(i=0;i<ss.length;i++) ss[i].className='slot';
+      continue;
+    }
+    var P=POTIONS[tile.k];
+    card.classList.remove('empty');
+    card.querySelector('.ic').textContent=P.icon;
+    card.querySelector('.nm').textContent=P.th;
+    card.querySelector('.vl').textContent=P.val+'★';
+    for(i=0;i<ss.length;i++){
+      if(i>=P.recipe.length){ ss[i].className='slot'; continue; }
+      var cls='slot on s'+P.recipe[i];
+      if(tile.fill[i]) cls+=' fill';
+      else if(UI.sel>=0&&iCanAct()&&mine&&canPlace(p,UI.sel,b,i)) cls+=' can';
+      ss[i].className=cls; ss[i].dataset.b=b; ss[i].dataset.s=i;
+    }
+  }
+  var shelf=$('shelf'); clear(shelf);
+  if(!p.done.length){ shelf.appendChild(el('div','emptyhint','ยังไม่มีม้วนคาถาที่สำเร็จประดับเกียรติในวิหาร')); }
+  for(var d=0;d<p.done.length;d++){
+    var dd=p.done[d],PP=POTIONS[dd.k];
+    var chip=el('button','pot'+(dd.drunk?' drunk':(iCanAct()&&mine?' ready':'')));
+    chip.appendChild(el('span',null,PP.icon));
+    chip.appendChild(el('span',null,PP.th));
+    chip.appendChild(el('span','v',PP.val+'★'));
+    if(dd.drunk) chip.appendChild(el('span',null,'✓'));
+    chip.dataset.di=d; shelf.appendChild(chip);
+  }
+}
+function renderActions(){
+  var act=iCanAct()&&S.phase==='play', p=S.players[S.cur];
+  $('act-help').disabled=!(act&&!S.turn.helped&&S.helpLeft>0&&!S.pend);
+  $('act-auto').disabled=!(act&&!S.pend&&p.pool.length>0);
+  $('act-end').disabled=!(act&&!S.pend);
+  var showCancel=!!(S.pend&&act&&S.pend.k!=='chooseTile'&&S.pend.k!=='draft');
+  $('act-cancel').style.display=showCancel?'block':'none';
+}
+function pendText(){
+  var pd=S.pend; if(!pd) return '';
+  if(pd.k==='marbleOne') return (pd.src==='help'?'🆘 ':'📘 ')+'เลือกอัญมณีเวท 1 ลูกบนเครื่องจ่าย (พลังจะไม่ระเบิท)';
+  if(pd.k==='adjDiff') return '🧲 เชื่อมสองอัญมณีที่ติดกันคนละสี ('+(pd.step===1?'ลูกแรก':'ลูกที่สอง')+')';
+  if(pd.k==='run') return '🍯 สัมผัสอัญมณีกลุ่มสีเดียวกันที่ติดกันตั้งแต่ 2 ลูกขึ้นไป';
+  if(pd.k==='abyss') return '🌀 ดึงมหาธาตุจากปากรางด้านล่างสุดได้ไม่ซ้ำสี (หยิบแล้ว '+pd.count+')';
+  if(pd.k==='discard') return '🌋 ละลายแก้วอัญมณีสีเดียวกันในรางที่เลือกกลับสู่วิหาร (สูงสุด 5 ลูก)';
+  if(pd.k==='steal') return '💘 สะกดจิตช่วงชิงอัญมณีบนม้วนคาถาของฝ่ายตรงข้าม';
+  if(pd.k==='chooseTile') return '📋 อัญเชิญจารึกคาถาโบราณจากแท่นกองกลางวิหาร';
+  if(pd.k==='draft') return '📋 เลือกม้วนจารึกคาถาตั้งต้นศึกลูกแก้วมังกร';
+  return '';
+}
+function renderPend(){
+  var b=$('bannr');
+  if(S.pend&&iCanAct()){ b.classList.add('on'); $('bannr-t').textContent=pendText(); }
+  else b.classList.remove('on');
+  $('pend-done').style.display=(S.pend&&S.pend.k==='abyss'&&iCanAct())?'block':'none';
+  var need=S.pend&&iCanAct()&&(S.pend.k==='draft'||S.pend.k==='steal');
+  if(need) buildPendModal();
+  else if(!UI.localModal) closeModal();
+}
+function recipeText(P){
+  var m={},s='';
+  P.recipe.forEach(function(c){ m[c]=(m[c]||0)+1; });
+  CLIST.forEach(function(c){ if(m[c]) s+=m[c]+'×'+CSHORT[c]+' '; });
+  return s;
+}
+function buildPendModal(){
+  var pd=S.pend,opts=[],title='',desc='',cancelable=true,k,i;
+  if(pd.k==='draft'){
+    var dp=S.players[S.draft.i];
+    title='📋 ผู้พิทักษ์ '+dp.name+' อัญเชิญคาถาตั้งต้น ('+(S.draft.n+1)+'/2)';
+    desc='เลือกม้วนคาถาเพื่อนำไปประดิษฐานบนแท่นปรุงศิลา'; cancelable=false;
+    for(k=0;k<8;k++){
+      var P=POTIONS[k],cnt=S.typeStacks[k].length;
+      opts.push({icon:P.icon,name:P.th,sub:P.val+'★ • บัญญัติธาตุ: '+recipeText(P),dis:cnt===0,act:{t:'draftPick',k:k}});
+    }
+  } else if(pd.k==='steal'){
+    title='💘 อาคมช่วงชิงอัญมณีธาตุ'; desc='โปรดชี้เป้าหมายอัญมณีเวทมนตร์ที่สลักอยู่บนม้วนคาถาของผู้ร่วมชะตาคนอื่น';
+    for(i=0;i<S.n;i++){
+      if(i===S.cur) continue;
+      var vp=S.players[i];
+      for(var b=0;b<2;b++){
+        var t=vp.brew[b]; if(!t) continue;
+        for(var s=0;s<t.fill.length;s++){
+          if(t.fill[s]) opts.push({icon:POTIONS[t.k].icon,dot:t.fill[s],name:vp.name,
+            sub:CNAME[t.fill[s]]+' • คาถา '+POTIONS[t.k].th,act:{t:'target',kind:'steal',p:i,b:b,s:s}});
+        }
+      }
+    }
+    if(!opts.length) desc='ไม่มีเป้าหมายที่ตรงบัญญัติ — จำต้องส่งกระแสเวทคืน';
+  }
+  openModal(title,desc,opts,cancelable);
+}
+function openModal(title,desc,opts,cancelable,cb){
+  var m=$('modal-pick');
+  $('mp-title').textContent=title;
+  $('mp-desc').textContent=desc||'';
+  var box=$('mp-opts'); clear(box);
+  opts.forEach(function(o){
+    var b=el('button','opt');
+    if(o.dis||o.disabled) b.disabled=true;
+    var ic=el('div','oi');
+    if(o.dot) ic.appendChild(el('span','dot c'+o.dot));
+    if(o.icon) ic.appendChild(document.createTextNode(o.icon));
+    b.appendChild(ic);
+    b.appendChild(el('div','on2',o.name));
+    if(o.sub) b.appendChild(el('div','tiny muted',o.sub));
+    b.onclick=function(){ sfx('tap'); if(cb){ UI.localModal=false; closeModal(); cb(o); } else dispatch(o.act); };
+    box.appendChild(b);
+  });
+  $('mp-cancel').style.display=(cancelable===false)?'none':'block';
+  UI.localModal=!!cb;
+  m.classList.add('on');
+}
+function closeModal(){ var m=$('modal-pick'); if(m) m.classList.remove('on'); UI.localModal=false; }
+function react(i,emo){
+  try{
+    var c=pcEls[i]; if(!c) return;
+    var r=c.querySelector('.react'); r.textContent=emo;
+    r.classList.remove('on'); void r.offsetWidth; r.classList.add('on');
+  }catch(e){}
+}
+
+/* ---------------- PRESTIGE BOT LOGIC ---------------- */
+function needMap(p){
+  var n={R:0,Y:0,B:0,K:0};
+  for(var b=0;b<2;b++){
+    var t=p.brew[b]; if(!t) continue;
+    var rc=POTIONS[t.k].recipe;
+    for(var i=0;i<rc.length;i++) if(!t.fill[i]) n[rc[i]]++;
+  }
+  return n;
+}
+function simValue(p,cols){
+  var avail={R:0,Y:0,B:0,K:0},i,c;
+  for(i=0;i<p.pool.length;i++) avail[p.pool[i].c]++;
+  for(i=0;i<cols.length;i++) avail[cols[i]]++;
+  var need=[];
+  for(var b=0;b<2;b++){
+    var t=p.brew[b]; if(!t) continue;
+    var m={R:0,Y:0,B:0,K:0},tot=0,rc=POTIONS[t.k].recipe;
+    for(i=0;i<rc.length;i++) if(!t.fill[i]){ m[rc[i]]++; tot++; }
+    need.push({m:m,tot:tot,val:POTIONS[t.k].val,k:t.k});
+  }
+  need.sort(function(a,b2){ return a.tot-b2.tot; });
+  var sc=0,used=0;
+  for(i=0;i<need.length;i++){
+    var nd=need[i],ok=true;
+    for(c in nd.m) if(avail[c]<nd.m[c]) ok=false;
+    if(ok){
+      for(c in nd.m){ avail[c]-=nd.m[c]; used+=nd.m[c]; }
+      sc+=nd.val*2.2+6;
+      var same=0;
+      for(var q=0;q<p.done.length;q++) if(p.done[q].k===nd.k) same++;
+      if(same===2&&!p.skillSame[nd.k]) sc+=7;
+    } else {
+      for(c in nd.m){ var tk=Math.min(avail[c],nd.m[c]); avail[c]-=tk; used+=tk; }
+    }
+  }
+  sc+=used*2.5;
+  var left=0; for(c in avail) left+=avail[c];
+  sc+=Math.min(left,POOL_MAX)*.3-Math.max(0,left-POOL_MAX)*.35;
+  return sc;
+}
+function simDisp(){
+  return {tracks:S.disp.tracks.map(function(t){ return t.map(function(m){ return {id:m.id,c:m.c}; }); }),
+          tank:shuffle(S.disp.tank.map(function(m){ return {id:m.id,c:m.c}; }))};
+}
+function botBestPick(p,level){
+  var cands=[],t,i;
+  for(t=0;t<5;t++) for(i=0;i<Math.min(S.disp.tracks[t].length,LOCK_IDX);i++) cands.push({t:t,i:i});
+  if(!cands.length) return null;
+  if(level==='easy') return cands[Math.floor(Math.random()*cands.length)];
+  var best=null;
+  for(var q=0;q<cands.length;q++){
+    var D2=simDisp();
+    var r=removeIdx(D2,cands[q].t,[cands[q].i],true);
+    var cols=r.got.map(function(m){ return m.c; });
+    var v=simValue(p,cols)+r.got.length*.45;
+    if(level==='hard'){
+      var opp=S.players[(p.i+1)%S.n],ob=0;
+      for(var z=0;z<cands.length;z+=4){
+        var D3={tracks:D2.tracks.map(function(x){ return x.map(function(m){ return {id:m.id,c:m.c}; }); }),tank:D2.tank.slice()};
+        if(cands[z].i>=D3.tracks[cands[z].t].length) continue;
+        var r2=removeIdx(D3,cands[z].t,[cands[z].i],true);
+        var ov=simValue(opp,r2.got.map(function(m){ return m.c; }));
+        if(ov>ob) ob=ov;
+      }
+      v-=ob*.2;
+    }
+    v+=Math.random()*.35;
+    if(!best||v>best.v) best={t:cands[q].t,i:cands[q].i,v:v};
+  }
+  return best;
+}
+function findColor(c,maxIdx){
+  var lim=(maxIdx==null)?LOCK_IDX:maxIdx;
+  for(var t=0;t<5;t++) for(var i=0;i<Math.min(S.disp.tracks[t].length,lim);i++)
+    if(S.disp.tracks[t][i].c===c) return {t:t,i:i};
+  return null;
+}
+async function botAct(who){
+  try{
+    if(!S||S.phase==='over') return;
+    if(S.phase==='draft'){
+      if(S.draft.i!==who) return;
+      var av=[],k;
+      for(k=0;k<8;k++) if(S.typeStacks[k].length) av.push(k);
+      var pk=av[Math.floor(Math.random()*av.length)];
+      await applyAction({t:'draftPick',k:pk},who); return;
+    }
+    if(S.cur!==who) return;
+    var p=S.players[who], lvl=p.isBot?p.level:'normal';
+    await sleep(320);
+    if(!S.turn.took){
+      var pick=botBestPick(p,lvl);
+      if(pick) await applyAction({t:'take',track:pick.t,idx:pick.i},who);
+      else S.turn.took=true;
+    }
+    await sleep(240);
+    doAutoPlace(p); render(); broadcast();
+    if(lvl!=='easy'){ await botPotions(p); doAutoPlace(p); render(); broadcast(); }
+    if(lvl!=='easy'&&!S.turn.helped&&S.helpLeft>0&&!S.pend){
+      var want=null;
+      for(var b=0;b<2;b++){
+        var t=p.brew[b]; if(!t) continue;
+        var miss=[],rc=POTIONS[t.k].recipe;
+        for(var i=0;i<rc.length;i++) if(!t.fill[i]) miss.push(rc[i]);
+        if(miss.length===1&&POTIONS[t.k].val>=4) want=miss[0];
+      }
+      if(want){
+        var loc=findColor(want);
+        if(loc){
+          await applyAction({t:'help'},who);
+          await applyAction({t:'target',kind:'marble',track:loc.t,idx:loc.i},who);
+          doAutoPlace(p);
+        }
+      }
+    }
+    doAutoPlace(p); render(); broadcast();
+    await sleep(280);
+    if(S.pend&&S.pend.k!=='chooseTile') await applyAction({t:'pendDone'},who);
+    if(S.pend&&S.pend.k!=='chooseTile') S.pend=null;
+    await applyAction({t:'end'},who);
+    var guard=0;
+    while(S&&S.pend&&S.pend.k==='chooseTile'&&S.cur===who&&guard++<6){
+      var bs=-1,bv=-99;
+      for(var s=0;s<5;s++){
+        if(!S.stacks[s].length) continue;
+        var kk=S.stacks[s][S.stacks[s].length-1];
+        var v=POTIONS[kk].val-POTIONS[kk].recipe.length*.7+Math.random();
+        var same=0; for(var d=0;d<p.done.length;d++) if(p.done[d].k===kk) same++;
+        if(same===2&&!p.skillSame[kk]) v+=4;
+        var kinds={},nk=0;
+        for(d=0;d<p.done.length;d++) kinds[p.done[d].k]=1;
+        for(var x in kinds) nk++;
+        if(!kinds[kk]&&nk===4&&!p.skillDiff) v+=4;
+        if(v>bv){ bv=v; bs=s; }
+      }
+      if(bs<0) break;
+      await applyAction({t:'target',kind:'stack',si:bs},who);
+    }
+  }catch(e){
+    showError('bot',e);
+    try{
+      if(S){ S.pend=null; UI.animating=false;
+        if(S.cur===who&&S.phase==='play'){ S.turn.took=true; doEndTurn(); }
+        render(); broadcast(); }
+    }catch(x){}
+  }
+}
+async function botPotions(p){
+  var guard=0;
+  for(var d=0;d<p.done.length&&guard<3;d++){
+    if(p.done[d].drunk||S.pend) continue;
+    var k=p.done[d].k, nd=needMap(p), c, plan=null;
+    if(k===0){
+      for(c in nd){ if(nd[c]>0){ var l=findColor(c); if(l){ plan=[{kind:'marble',track:l.t,idx:l.i}]; break; } } }
+    } else if(k===3){
+      var bad=0;
+      for(var q=0;q<p.pool.length;q++) if(nd[p.pool[q].c]===0) bad++;
+      if(bad>0&&p.pool.length>0) plan=[];
+    } else if(k===1){
+      for(var pi=0;pi<S.n&&!plan;pi++){
+        if(pi===p.i) continue;
+        var vp=S.players[pi];
+        for(var b=0;b<2&&!plan;b++){
+          var t=vp.brew[b]; if(!t) continue;
+          for(var s=0;s<t.fill.length;s++) if(t.fill[s]&&nd[t.fill[s]]>0){ plan=[{kind:'steal',p:pi,b:b,s:s}]; break; }
+        }
+      }
+    } else if(k===6){
+      for(var t2=0;t2<5&&!plan;t2++){
+        var tr=S.disp.tracks[t2];
+        for(var i=0;i<Math.min(tr.length,LOCK_IDX)-1;i++){
+          if(tr[i].c===tr[i+1].c&&nd[tr[i].c]>=1){ plan=[{kind:'marble',track:t2,idx:i}]; break; }
+        }
+      }
+    } else if(k===2){
+      for(var t3=0;t3<5&&!plan;t3++){
+        var tr3=S.disp.tracks[t3];
+        for(var j=0;j<Math.min(tr3.length,LOCK_IDX)-1;j++){
+          if(tr3[j].c!==tr3[j+1].c&&nd[tr3[j].c]>0&&nd[tr3[j+1].c]>0){
+            plan=[{kind:'marble',track:t3,idx:j},{kind:'marble',track:t3,idx:j+1}]; break; }
+        }
+      }
+    } else if(k===4){
+      var picks=[],seen={};
+      for(var t4=0;t4<5;t4++){
+        var tr4=S.disp.tracks[t4];
+        if(tr4.length&&nd[tr4[0].c]>0&&!seen[tr4[0].c]){ seen[tr4[0].c]=1; picks.push({kind:'marble',track:t4,idx:0}); }
+      }
+      if(picks.length>=1) plan=picks;
+    }
+    if(plan){
+      guard++;
+      await applyAction({t:'drink',di:d},p.i);
+      await sleep(220);
+      for(var z=0;z<plan.length;z++){
+        if(!S.pend) break;
+        var a={t:'target'}; for(var kk in plan[z]) a[kk]=plan[z][kk];
+        await applyAction(a,p.i); await sleep(180);
+      }
+      if(S.pend) await applyAction({t:'pendDone'},p.i);
+      if(S.pend) S.pend=null;
+      doAutoPlace(p); render(); broadcast();
+    }
+  }
+}
+
+/* ---------------- ONLINE NETWORKING (PEERJS) ---------------- */
+var NET={peer:null,conns:[],host:false,code:'',name:'',myConn:null,seats:[]};
+function makeCode(){ var A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s=''; for(var i=0;i<5;i++) s+=A.charAt(Math.floor(Math.random()*A.length)); return s; }
+function peerId(c){ return 'drgorbi-th-v2-'+c; }
+function netStatus(m){ var e=$('o-status'); if(e) e.textContent=m; }
+function renderLobby(){
+  try{
+    var box=$('o-players'); if(!box) return; clear(box);
+    for(var i=0;i<NET.seats.length;i++){
+      var s=NET.seats[i],d=el('div','row c');
+      d.style.cssText='justify-content:space-between;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:8px 12px';
+      d.appendChild(el('span',null,AVATARS[i]+' '+s.name+(i===0?' (เจ้าพิธี)':'')));
+      d.appendChild(el('span','tiny',s.connected?'🟢 ผนึกเวทสมบูรณ์':'🔴 สัญญาหลุด'));
+      box.appendChild(d);
+    }
+    $('o-start').style.display=NET.host?'block':'none';
+    $('o-start').disabled=NET.seats.length<2;
+  }catch(e){ showError('lobby',e); }
+}
+function netSend(o){ try { if(NET.myConn&&NET.myConn.open) NET.myConn.send(o); } catch(e){ showError('netSend',e); } }
+function broadcast(ev){
+  try{
+    if(UI.mode!=='online'||!NET.host||!S) return;
+    S.tankCount=S.disp.tank.length;
+    var o=clone(S); o.disp.tank=[];
+    var pack={t:'sync',s:o,ev:ev||null,logs:LOGS.slice(-25)};
+    for(var i=0;i<NET.conns.length;i++) if(NET.conns[i]&&NET.conns[i].open) NET.conns[i].send(pack);
+  }catch(e){ showError('broadcast',e); }
+}
+function hostRoom(name){
+  if(window.__PEERFAIL||typeof Peer==='undefined'){ netStatus('❌ ไม่พบกระแสพลังเครือข่ายมิติ (ระบบจะปรับเข้าโหมดออฟไลน์อัตโนมัติ)'); return; }
+  NET.host=true; UI.isHost=true; UI.mode='online'; UI.myIdx=0;
+  NET.code=makeCode(); NET.name=name;
+  NET.seats=[{name:name,connected:true,id:null}];
+  $('o-lobby').style.display='flex'; $('o-roomcode').textContent=NET.code;
+  netStatus('กำลังเปิดห้องมิติ…');
+  try{ NET.peer=new Peer(peerId(NET.code),{debug:0}); }catch(e){ showError('peer',e); return; }
+  NET.peer.on('open',function(){ netStatus('✅ มิติวิหารพร้อมแล้ว! ส่งสารถอดรหัส '+NET.code+' ให้สหาย'); renderLobby(); });
+  NET.peer.on('error',function(err){
+    netStatus('⚠️ พลังมิติปั่นป่วน: '+((err&&err.type)?err.type:'สัญญาล้มเหลว'));
+    if(err&&err.type==='unavailable-id'){
+      try{ NET.peer.destroy(); }catch(x){}
+      setTimeout(function(){ hostRoom(name); },400);
+    }
+  });
+  NET.peer.on('connection',function(conn){
+    conn.on('open',function(){
+      NET.conns.push(conn);
+      conn.on('data',function(m){ onHostData(conn,m); });
+      conn.on('close',function(){ onSeatDrop(conn); });
+      conn.on('error',function(){ onSeatDrop(conn); });
+    });
+  });
+  renderLobby();
+}
+function onHostData(conn,msg){
+  try{
+    if(!msg) return;
+    if(msg.t==='hello'){
+      var idx=-1,i;
+      for(i=0;i<NET.seats.length;i++) if(NET.seats[i].name===msg.name) idx=i;
+      if(idx<0){
+        if(S){ conn.send({t:'deny',why:'พิธีกรรมเริ่มร่ายไปแล้ว — สงวนให้เข้าได้เฉพาะจิตเดิมที่บันทึกไว้'}); return; }
+        if(NET.seats.length>=4){ conn.send({t:'deny',why:'วิหารนี้รับรองผู้พิทักษ์สูงสุด 4 ท่าน'}); return; }
+        NET.seats.push({name:msg.name,connected:true,id:conn.peer});
+        idx=NET.seats.length-1;
+      }
+      NET.seats[idx].connected=true; NET.seats[idx].id=conn.peer; conn.__seat=idx;
+      conn.send({t:'welcome',idx:idx,code:NET.code,seats:NET.seats});
+      if(S&&S.players[idx]){ S.players[idx].dc=false; S.players[idx].isBot=false; log('🔌 จิตวิญญาณ '+msg.name+' หวนคืนสู่วิหารศักดิ์สิทธิ์'); broadcast(); }
+      lobbyBroadcast(); renderLobby();
+    } else if(msg.t==='action'){
+      if(conn.__seat==null) return;
+      applyAction(msg.a,conn.__seat);
+    }
+  }catch(e){ showError('hostData',e); }
+}
+function lobbyBroadcast(){ for(var i=0;i<NET.conns.length;i++) if(NET.conns[i]&&NET.conns[i].open) NET.conns[i].send({t:'seats',seats:NET.seats}); }
+function onSeatDrop(conn){
+  try{
+    var i=conn.__seat;
+    if(i!=null&&NET.seats[i]) NET.seats[i].connected=false;
+    NET.conns=NET.conns.filter(function(c){ return c!==conn; });
+    if(S&&i!=null&&S.players[i]){
+      S.players[i].dc=true;
+      log('🔌 จิตวิญญาณ '+S.players[i].name+' ขาดการเชื่อมต่อ — บอทผู้พิทักษ์จะคุมร่างแทนชั่วคราว');
+      render(); broadcast(); autoPilot();
+    }
+    lobbyBroadcast(); renderLobby();
+  }catch(e){ showError('seatDrop',e); }
+}
+function joinRoom(code,name){
+  if(window.__PEERFAIL||typeof Peer==='undefined'){ netStatus('❌ ล้มเหลวในการดึงพลังเครือข่าย'); return; }
+  NET.host=false; UI.isHost=false; UI.mode='online'; NET.code=code; NET.name=name;
+  $('o-lobby').style.display='flex'; $('o-roomcode').textContent=code;
+  netStatus('กำลังนำพาจิตมุ่งสู่รหัสค่ายกล '+code+' …');
+  try{ if(NET.peer) NET.peer.destroy(); }catch(x){}
+  try{ NET.peer=new Peer({debug:0}); }catch(e){ showError('peer',e); return; }
+  NET.peer.on('open',function(){
+    var conn=NET.peer.connect(peerId(code),{reliable:true});
+    NET.myConn=conn;
+    conn.on('open',function(){ netStatus('เชื่อมกระแสพลังสำเร็จ — กำลังยืนยันตัวตน…'); conn.send({t:'hello',name:name}); });
+    conn.on('data',function(m){ onClientData(m); });
+    conn.on('close',function(){ netStatus('🔴 จิตหลุดจากวิหารของเจ้าภาพ — โปรดเชื่อมต่อใหม่อีกครั้ง'); });
+    conn.on('error',function(){ netStatus('⚠️ เกิดคลื่นรบกวนสัญญาณมิติวิหาร'); });
+  });
+  NET.peer.on('error',function(err){ netStatus('⚠️ ล้มเหลว: '+((err&&err.type)?err.type:'ไม่พบค่ายกล')+' — โปรดตรวจสอบรหัสผ่านมิติให้ถูกต้อง'); });
+}
+async function onClientData(msg){
+  try{
+    if(!msg) return;
+    if(msg.t==='welcome'){
+      UI.myIdx=msg.idx; NET.seats=msg.seats||[];
+      netStatus('✅ ลงทะเบียนจิตสำเร็จ — ท่านคือผู้พิทักษ์อันดับที่ '+(msg.idx+1));
+      renderLobby();
+    } else if(msg.t==='seats'){ NET.seats=msg.seats||[]; renderLobby(); }
+    else if(msg.t==='deny'){ netStatus('❌ มหายักษ์ปฏิเสธ: '+msg.why); }
+    else if(msg.t==='sync'){
+      var wasIn=$('sc-game').classList.contains('on');
+      var st=msg.s; st.disp.tank=[];
+      if(msg.logs) LOGS=msg.logs.slice();
+      if(msg.ev&&S&&wasIn){ S=st; render(); await playEvents(msg.ev); }
+      else S=st;
+      UI.mode='online';
+      if(!wasIn&&S.phase!=='over'){
+        showScreen('sc-game');
+        $('players').className='players p'+S.n;
+        for(var i=0;i<4;i++) pcEls[i].classList.toggle('on',i<S.n);
+        $('room-chip').classList.add('on');
+        MEL={};
+        for(i=0;i<trackEls.length;i++){ var tr=trackEls[i],ll=tr.querySelector('.lockline'); clear(tr); if(ll) tr.appendChild(ll); }
+        fitBoard(); applySnap(snapOf(S.disp));
+      }
+      if(LOGS.length) { var l=$('logline'); if(l) l.textContent=LOGS[LOGS.length-1]; }
+      if(S.phase==='over') showResult('');
+      render();
+    }
+  }catch(e){ showError('clientData',e); }
+}
+
+/* ---------------- INITIAL BINDINGS & GRAPHICS SETUP ---------------- */
+function showScreen(id){
+  var a=document.querySelectorAll('.screen');
+  for(var i=0;i<a.length;i++) a[i].classList.toggle('on',a[i].id===id);
+  if(id==='sc-game') setTimeout(fitBoard,60);
+}
+function bind(){
+  var i;
+  trackEls=[]; var trs=document.querySelectorAll('#tracks .track');
+  for(i=0;i<trs.length;i++) trackEls.push(trs[i]);
+  pcEls=[$('pc0'),$('pc1'),$('pc2'),$('pc3')];
+  stkEls=[]; var sks=document.querySelectorAll('#stacks .stk');
+  for(i=0;i<sks.length;i++) stkEls.push(sks[i]);
+  bwEls=[$('bw0'),$('bw1')];
+
+  document.body.addEventListener('pointerdown',function(){ auInit(); if(AU.music&&!AU.started) musicStart(); });
+
+  $('m-solo').onclick=function(){ sfx('tap'); UI.mode='solo'; $('s-diffwrap').style.display='block'; showScreen('sc-setup'); };
+  $('m-local').onclick=function(){ sfx('tap'); UI.mode='local'; $('s-diffwrap').style.display='none'; showScreen('sc-setup'); };
+  $('m-online').onclick=function(){ sfx('tap'); UI.mode='online'; showScreen('sc-online'); };
+  $('m-rules').onclick=$('g-rules').onclick=function(){ sfx('tap'); $('modal-rules').classList.add('on'); };
+  $('rules-close').onclick=function(){ sfx('tap'); $('modal-rules').classList.remove('on'); };
+  $('g-log').onclick=function(){ sfx('tap'); openLog(); };
+  $('log-close').onclick=function(){ sfx('tap'); $('modal-log').classList.remove('on'); };
+  $('m-music').onclick=$('g-music').onclick=function(){ musicToggle(!AU.music); refreshAudioBtns(); sfx('tap'); };
+  $('m-sfx').onclick=$('g-sfx').onclick=function(){ AU.sfx=!AU.sfx; refreshAudioBtns(); auInit(); sfx('tap'); };
+  $('errclose').onclick=function(){ $('errpanel').classList.remove('on'); };
+  $('errreload').onclick=function(){ location.reload(); };
+
+  function seg(id){
+    $(id).addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      var all=$(id).querySelectorAll('button');
+      for(var i=0;i<all.length;i++) all[i].classList.remove('act');
+      b.classList.add('act'); sfx('tap');
+    });
+  }
+  seg('s-count'); seg('s-diff');
+  $('s-back').onclick=function(){ sfx('tap'); showScreen('sc-menu'); };
+  $('s-start').onclick=function(){
+    sfx('tap'); auInit(); if(AU.music) musicStart();
+    var cb=$('s-count').querySelector('.act'), db=$('s-diff').querySelector('.act');
+    var n=parseInt(cb?cb.dataset.v:'2',10), lv=db?db.dataset.v:'normal';
+    var nm=($('s-name').value||'นักเวทมังกร').substring(0,10);
+    var pls=[];
+    if(UI.mode==='solo'){
+      pls.push({name:nm,isBot:false});
+      var bn=['ผู้คุมอัคคีแดง','เนตรพายุมรกต','เงาอาคมทมิฬ'];
+      for(var i=1;i<n;i++) pls.push({name:bn[i-1],isBot:true,level:lv});
+    } else {
+      for(var j=0;j<n;j++) pls.push({name:(j===0?nm:'ผู้พิทักษ์ '+(j+1)),isBot:false});
+    }
+    startGame({mode:UI.mode,players:pls});
+  };
+
+  $('o-create').onclick=function(){ sfx('tap'); auInit(); if(AU.music) musicStart(); hostRoom(($('o-name').value||'เจ้าพิธี').substring(0,10)); };
+  $('o-join').onclick=function(){
+    sfx('tap'); auInit(); if(AU.music) musicStart();
+    var c=($('o-code').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,5);
+    if(c.length!==5){ netStatus('⚠️ โปรดกรอกรหัสอักขระเวทให้ครบถ้วน 5 หลัก'); return; }
+    joinRoom(c,($('o-name').value||'ผู้สลักเวท').substring(0,10));
+  };
+  $('o-copy').onclick=function(){
+    var link=location.origin+location.pathname+'?room='+NET.code;
+    try { navigator.clipboard.writeText(link); netStatus('🔗 สลักจารึกสารมิติลงในคลิปบอร์ดแล้ว!'); }
+    catch(e){ netStatus(link); }
+  };
+  $('o-start').onclick=function(){
+    if(!NET.host||NET.seats.length<2) return;
+    sfx('tap');
+    var pls=NET.seats.map(function(s){ return {name:s.name,isBot:false}; });
+    UI.mode='online'; UI.isHost=true; UI.myIdx=0;
+    startGame({mode:'online',players:pls,room:NET.code});
+  };
+  $('o-back').onclick=function(){ sfx('tap'); showScreen('sc-menu'); };
+
+  $('g-menu').onclick=function(){
+    sfx('tap');
+    openModal('☰ เมนูสถิตวิหาร','กำหนดชะตา',[
+      {icon:'📖',name:'คัมภีร์วิธีเล่น',sub:'เปิดดูกติกาพิธี'},
+      {icon:'📜',name:'ศิลาจารึกประวัติ',sub:'ประวัติการร่ายเวท'},
+      {icon:'🔁',name:'เริ่มพิธีใหม่',sub:'ล้างแท่นเริ่มใหม่ด้วยมิติเดิม'},
+      {icon:'🏠',name:'ละทิ้งวิหารกลับหน้าหลัก',sub:'ออกสู่เมนูหลัก'}
+    ],true,function(o){
+      if(o.name==='คัมภีร์วิธีเล่น') $('modal-rules').classList.add('on');
+      else if(o.name==='ศิลาจารึกประวัติ') openLog();
+      else if(o.name==='เริ่มพิธีใหม่'){ if(UI.lastCfg&&UI.mode!=='online') startGame(UI.lastCfg); }
+      else if(o.name==='ละทิ้งวิหารกลับหน้าหลัก') showScreen('sc-menu');
+    });
+  };
+  $('g-allpot').onclick=function(){
+    if(!S) return;
+    var p=viewPlayer(), opts=[];
+    for(var d=0;d<p.done.length;d++){
+      var P=POTIONS[p.done[d].k];
+      opts.push({icon:P.icon,name:P.th+(p.done[d].drunk?' ✓ (สำแดงพลังแล้ว)':''),sub:P.val+'★ • คาถา: '+P.pw});
+    }
+    var cnt={},k,txt='';
+    for(d=0;d<p.done.length;d++) cnt[p.done[d].k]=(cnt[p.done[d].k]||0)+1;
+    var kinds=0; for(k in cnt) kinds++;
+    txt='คาถาสลักแล้ว '+p.done.length+' ชุด • '+kinds+' แขนงวิชา • แต้มสะสมคาถา '+potionPts(p)+' • ⭐'+p.skill+' • 🆘โทษ '+p.help+' → คะแนนสุทธิ '+scoreOf(p);
+    sfx('tap');
+    openModal('🗄️ หอคาถาของ '+p.name,txt,opts,true,function(){});
+  };
+  $('mp-cancel').onclick=function(){ sfx('tap'); if(UI.localModal){ closeModal(); return; } closeModal(); dispatch({t:'cancel'}); };
+  $('pend-done').onclick=function(){ sfx('tap'); dispatch({t:'pendDone'}); };
+
+  $('tracks').addEventListener('click',function(ev){
+    try{
+      if(!S||!iCanAct()) return;
+      var m=ev.target.closest('.marble'); if(!m) return;
+      var t=parseInt(m.dataset.track,10), i=parseInt(m.dataset.idx,10);
+      if(i>=LOCK_IDX){ log('⚠️ อัญมณีเหนือกำแพงแก้วชั้นที่ 9 ไม่อนุญาตให้เชื่อมต่อพลังงาน'); sfx('bad'); return; }
+      if(S.pend&&isMarblePend(S.pend.k)) dispatch({t:'target',kind:'marble',track:t,idx:i});
+      else if(S.pend) log('⚠️ มีพลังงานเวทสะสมคั่งค้างอยู่ด้านล่าง โปรดสลายหรือใช้งานให้เสร็จสิ้นก่อน');
+      else dispatch({t:'take',track:t,idx:i});
+    }catch(e){ showError('clickTrack',e); }
+  });
+  $('stacks').addEventListener('click',function(ev){
+    if(!S) return;
+    var s=ev.target.closest('.stk'); if(!s) return;
+    var si=parseInt(s.dataset.s,10);
+    if(iCanAct()&&S.pend&&S.pend.k==='chooseTile'){ sfx('tap'); dispatch({t:'target',kind:'stack',si:si}); return; }
+    var st=S.stacks[si];
+    if(st&&st.length){ var P=POTIONS[st[st.length-1]]; log(P.icon+' คาถา '+P.th+' ('+P.val+'★) — คัมภีร์สำแดงผล: '+P.pw); }
+  });
+  $('pool').addEventListener('click',function(ev){
+    if(!S||!iCanAct()) return;
+    var m=ev.target.closest('.pm'); if(!m) return;
+    var mi=parseInt(m.dataset.mi,10);
+    if(S.pend){ log('⚠️ เคลียร์เวทที่คั่งค้างบนศิลาแท่นสลักให้เรียบร้อยก่อน'); return; }
+    UI.sel=(UI.sel===mi)?-1:mi; sfx('tap'); render();
+  });
+  function slotClick(ev){
+    if(!S||!iCanAct()||S.pend) return;
+    var sl=ev.target.closest('.slot'); if(!sl||!sl.classList.contains('on')) return;
+    if(UI.sel<0){ log('ℹ️ โปรดแตะเลือกแก้วอัญมณีเวทในคลังก่อน แล้วจึงนำมาสลักลงรอยสลักคาถา'); return; }
+    dispatch({t:'place',mi:UI.sel,b:parseInt(sl.dataset.b,10),s:parseInt(sl.dataset.s,10)});
+  }
+  $('bw0').addEventListener('click',slotClick);
+  $('bw1').addEventListener('click',slotClick);
+  $('shelf').addEventListener('click',function(ev){
+    if(!S) return;
+    var c=ev.target.closest('.pot'); if(!c) return;
+    var di=parseInt(c.dataset.di,10), p=viewPlayer(), d=p.done[di]; if(!d) return;
+    var P=POTIONS[d.k];
+    if(!iCanAct()||d.drunk||S.pend||p!==S.players[S.cur]){ log(P.icon+' '+P.th+' — '+P.pw+(d.drunk?' (สำแดงเวทแล้ว)':'')); return; }
+    sfx('tap');
+    openModal(P.icon+' ปลดปล่อยโอสถเวท '+P.th,P.pw+' (พลังพิเศษจะไม่กระตุ้นการปะทะระเบิดของแก้วมังกร)', [
+      {icon:'🥤',name:'ดื่มเพื่อสำแดงฤทธิ์!',sub:'ใช้พลังงานวิเศษของโอสถในเทิร์นนี้'},
+      {icon:'✖',name:'เก็บสารเวทไว้ก่อน',sub:'เก็บถนอมไว้ปลดปล่อยภายหลัง'}
+    ],true,function(o){ if(o.name==='ดื่มเพื่อสำแดงฤทธิ์!') dispatch({t:'drink',di:di}); });
+  });
+  $('act-help').onclick=function(){ sfx('tap'); dispatch({t:'help'}); };
+  $('act-auto').onclick=function(){ sfx('tap'); dispatch({t:'auto'}); };
+  $('act-cancel').onclick=function(){ sfx('tap'); dispatch({t:'cancel'}); };
+  $('act-end').onclick=function(){ sfx('tap'); dispatch({t:'end'}); };
+  $('r-menu').onclick=function(){ sfx('tap'); showScreen('sc-menu'); };
+  $('r-again').onclick=function(){ sfx('tap'); if(UI.lastCfg&&UI.mode!=='online') startGame(UI.lastCfg); else showScreen('sc-menu'); };
+
+  var rp=$('rules-potions');
+  POTIONS.forEach(function(P){
+    var d=el('div','prow');
+    d.appendChild(el('div',null,P.icon));
+    var r=el('div'); r.style.cssText='flex:1;min-width:0';
+    r.appendChild(el('div','on2',P.th+' — '+P.val+'★'));
+    r.appendChild(el('div','tiny muted','อัญมณีที่ต้องการ: '+recipeText(P)));
+    r.appendChild(el('div','tiny',P.pw));
+    d.appendChild(r); rp.appendChild(d);
+  });
+
+  // Mystical background particles
+  for(var b=0;b<12;b++){
+    var bu=el('div','bub'), sz=6+Math.random()*20;
+    bu.style.width=sz+'px'; bu.style.height=sz+'px';
+    bu.style.left=(Math.random()*100)+'%'; bu.style.bottom='-35px';
+    bu.style.animationDuration=(12+Math.random()*14)+'s';
+    bu.style.animationDelay=(-Math.random()*18)+'s';
+    $('bg').appendChild(bu);
+  }
+  window.addEventListener('resize',function(){ fitBoard(); });
+  if(window.ResizeObserver){
+    try{ new ResizeObserver(function(){ fitBoard(); }).observe($('stage')); }catch(e){}
+  }
+  var q=location.search.match(/room=([A-Za-z0-9]{5})/);
+  if(q){ $('o-code').value=q[1].toUpperCase(); showScreen('sc-online'); netStatus('พบค่ายกลเป้าหมายเวท '+q[1].toUpperCase()+' — ระบุนามจิตของท่านแล้วกดร่วมพิธี'); }
+  refreshAudioBtns();
+  selfTest();
+}
+try{ bind(); }catch(e){ showError('init',e); }
+</script>
+</body>
+</html>
